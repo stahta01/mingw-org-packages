@@ -80,8 +80,7 @@ build() {
     --prefix="${_install_prefix}/${_target}" \
     --host="i686-pc-mingw32"
 
-  make all-crt-objects # all-gcc
-  make all-mingwrt-libs
+  make # all-gcc
 }
 
 #check() {
@@ -100,7 +99,5 @@ package() {
   cp --no-clobber "${srcdir}/features.h" "${pkgdir}${_install_prefix}/${_target}/include/"
 
   cd "${srcdir}/build-mingwrt-${CHOST}"
-  make install-mingwrt-headers DESTDIR="${pkgdir}"
-  make install-crt-objects DESTDIR="${pkgdir}"
-  make install-mingwrt-libs DESTDIR="${pkgdir}"
+  make install DESTDIR="${pkgdir}"
 }
