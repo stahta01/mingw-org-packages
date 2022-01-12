@@ -1,0 +1,132 @@
+From 6ff3d1432f6b95a625df74517ad2160df8cf9024 Mon Sep 17 00:00:00 2001
+From: Tim Stahlhut <stahta01@gmail.com>
+Date: Mon, 10 Jan 2022 05:57:38 -0500
+Subject: Disable GCC_NO_EXECUTABLES when host is msys for stdc++
+
+---
+ libstdc++-v3/configure    | 27 ++++++++++++++++++---------
+ libstdc++-v3/configure.ac |  9 +++++++++
+ 2 files changed, 27 insertions(+), 9 deletions(-)
+
+diff --git a/libstdc++-v3/configure b/libstdc++-v3/configure
+index 9f9c5a2419a..e8d056539a2 100755
+--- a/libstdc++-v3/configure
++++ b/libstdc++-v3/configure
+@@ -3189,6 +3189,15 @@ if test "$build" != "$host"; then
+   # We are being configured with some form of cross compiler.
+   GLIBCXX_IS_NATIVE=false
+   case "$host","$target" in
++      x86_64-*-msys*,x86_64-*-mingw32*)
++	GLIBCXX_IS_NATIVE=true
++	;;
++      x86_64-*-msys*,i?86-*-mingw32*)
++	GLIBCXX_IS_NATIVE=true
++	;;
++      i686-*-msys*,i?86-*-mingw32*)
++	GLIBCXX_IS_NATIVE=true
++	;;
+     # Darwin crosses can use the host system's libraries and headers,
+     # because of the fat library support.  Of course, it must be the
+     # same version of Darwin on both sides.  Allow the user to
+@@ -12059,7 +12068,7 @@ else
+   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
+   lt_status=$lt_dlunknown
+   cat > conftest.$ac_ext <<_LT_EOF
+-#line 12062 "configure"
++#line 12071 "configure"
+ #include "confdefs.h"
+ 
+ #if HAVE_DLFCN_H
+@@ -12165,7 +12174,7 @@ else
+   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
+   lt_status=$lt_dlunknown
+   cat > conftest.$ac_ext <<_LT_EOF
+-#line 12168 "configure"
++#line 12177 "configure"
+ #include "confdefs.h"
+ 
+ #if HAVE_DLFCN_H
+@@ -15857,7 +15866,7 @@ $as_echo "$glibcxx_cv_atomic_long_long" >&6; }
+   # Fake what AC_TRY_COMPILE does.
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15860 "configure"
++#line 15869 "configure"
+ int main()
+ {
+   typedef bool atomic_type;
+@@ -15892,7 +15901,7 @@ $as_echo "$glibcxx_cv_atomic_bool" >&6; }
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15895 "configure"
++#line 15904 "configure"
+ int main()
+ {
+   typedef short atomic_type;
+@@ -15927,7 +15936,7 @@ $as_echo "$glibcxx_cv_atomic_short" >&6; }
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15930 "configure"
++#line 15939 "configure"
+ int main()
+ {
+   // NB: _Atomic_word not necessarily int.
+@@ -15963,7 +15972,7 @@ $as_echo "$glibcxx_cv_atomic_int" >&6; }
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15966 "configure"
++#line 15975 "configure"
+ int main()
+ {
+   typedef long long atomic_type;
+@@ -16116,7 +16125,7 @@ $as_echo "mutex" >&6; }
+   # unnecessary for this test.
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 16119 "configure"
++#line 16128 "configure"
+ int main()
+ {
+   _Decimal32 d1;
+@@ -16158,7 +16167,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+   # unnecessary for this test.
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 16161 "configure"
++#line 16170 "configure"
+ template<typename T1, typename T2>
+   struct same
+   { typedef T2 type; };
+@@ -16192,7 +16201,7 @@ $as_echo "$enable_int128" >&6; }
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 16195 "configure"
++#line 16204 "configure"
+ template<typename T1, typename T2>
+   struct same
+   { typedef T2 type; };
+diff --git a/libstdc++-v3/configure.ac b/libstdc++-v3/configure.ac
+index 699e55fd829..3816f8ff65a 100644
+--- a/libstdc++-v3/configure.ac
++++ b/libstdc++-v3/configure.ac
+@@ -37,6 +37,15 @@ if test "$build" != "$host"; then
+   # We are being configured with some form of cross compiler.
+   GLIBCXX_IS_NATIVE=false
+   case "$host","$target" in
++      x86_64-*-msys*,x86_64-*-mingw32*)
++	GLIBCXX_IS_NATIVE=true
++	;;
++      x86_64-*-msys*,i?86-*-mingw32*)
++	GLIBCXX_IS_NATIVE=true
++	;;
++      i686-*-msys*,i?86-*-mingw32*)
++	GLIBCXX_IS_NATIVE=true
++	;;
+     # Darwin crosses can use the host system's libraries and headers,
+     # because of the fat library support.  Of course, it must be the
+     # same version of Darwin on both sides.  Allow the user to
+-- 
