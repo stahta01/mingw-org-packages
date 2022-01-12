@@ -1,0 +1,106 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+
+_mingw_suff=mingw-org-cross
+_target="i686-pc-mingw32"
+_install_prefix="/opt/cross-mingw-org"
+
+_realname=wsl
+_sourcedir=${_realname}-git
+pkgbase=mingw-org-cross-${_realname}
+pkgname=("${_mingw_suff}-${_realname}")
+pkgver=5.4.3.g0c111acc
+pkgrel=1
+pkgdesc="Cross Windows System Libraries (WSL) w32api and mingwrt (mingw.org)"
+arch=('i686' 'x86_64')
+url='https://mingw.osdn.io/'
+license=('LICENSE')
+makedepends=('git' 'autotools')
+_commit='0c111acc00bc15f5270535a71ee1601a3ed4a168'
+source=("${_sourcedir}"::"git://git.osdn.net/gitroot/mingw/mingw-org-wsl.git#commit=${_commit}"
+        'features.h')
+sha256sums=('SKIP'
+            '4bbe20b8911f406c04b5329675e29ce1fff1b49e5b44f900ce308b3051a94e39')
+
+pkgver() {
+  cd "${srcdir}/${_sourcedir}"
+
+  local _version=$(head -n 34 VERSION.m4 | grep '__VERSION__' | sed -e 's/VERSION//' | sed -e 's/m4_define//' | sed -e 's/.* //' | tr -d '_,([])' | tr '\n' '.' | sed 's/.$/\n/')
+
+  printf "%s.g%s" "$_version" $(git rev-parse --short=8 ${_commit})
+}
+
+prepare() {
+  cd "${srcdir}/${_sourcedir}"
+
+  cd w32api && autoconf -I ..
+  cd ../mingwrt && autoconf -I ..
+}
+
+build() {
+  cd "${srcdir}/${_sourcedir}/w32api"
+  mkdir -p "${srcdir}/build-w32api-${CHOST}" && cd "${srcdir}/build-w32api-${CHOST}"
+
+  echo "CPPFLAGS := $CPPFLAGS"
+  echo "CFLAGS := $CFLAGS"
+  echo "CXXFLAGS := $CXXFLAGS"
+  echo "LDFLAGS := $LDFLAGS"
+
+  # MSys2 default flags are wrong for this package
+  CFLAGS='-pipe'
+  CXXFLAGS='-pipe'
+
+  echo "after changing"
+  echo "CFLAGS := $CFLAGS"
+  echo "CXXFLAGS := $CXXFLAGS"
+
+  msg "Configuring w32api"
+  CC="${_target}-gcc" \
+  ../${_sourcedir}/w32api/configure \
+    --prefix="${_install_prefix}/${_target}" \
+    --host="i686-pc-mingw32"
+
+  make
+
+  msg "Installing local copy of w32api"
+  cd "${srcdir}/build-w32api-${CHOST}"
+  rm -fr ${srcdir}/temp-install-w32api${_install_prefix}
+  mkdir -p ${srcdir}/temp-install-w32api${_install_prefix}/${_target}
+  make DESTDIR=${srcdir}/temp-install-w32api install
+
+  msg "Copy extra headers to local copy of w32api"
+  cp --no-clobber ${srcdir}/build-w32api-${CHOST}/*.h ${srcdir}/temp-install-w32api${_install_prefix}/${_target}/include/
+
+  cd "${srcdir}/${_sourcedir}/mingwrt"
+  mkdir -p "${srcdir}/build-mingwrt-${CHOST}" && cd "${srcdir}/build-mingwrt-${CHOST}"
+
+  msg "Configuring mingwrt"
+  CFLAGS+=" -I${srcdir}/temp-install-w32api${_install_prefix}/${_target}/include" \
+  CC="${_target}-gcc" \
+  ../${_sourcedir}/mingwrt/configure \
+    --prefix="${_install_prefix}/${_target}" \
+    --host="i686-pc-mingw32"
+
+  make all-crt-objects # all-gcc
+  make all-mingwrt-libs
+}
+
+#check() {
+#  cd "${srcdir}/build-w32api-${CHOST}"
+#
+#  make check
+#}
+
+package() {
+#  msg "Copying w32api install files"
+#  mkdir -p ${pkgdir}${_install_prefix}/
+#  cp --recursive ${srcdir}/temp-install-w32api${_install_prefix}/ ${pkgdir}${_install_prefix}
+
+  cd "${srcdir}/build-w32api-${CHOST}"
+  make install DESTDIR="${pkgdir}"
+  cp --no-clobber "${srcdir}/features.h" "${pkgdir}${_install_prefix}/${_target}/include/"
+
+  cd "${srcdir}/build-mingwrt-${CHOST}"
+  make install-mingwrt-headers DESTDIR="${pkgdir}"
+  make install-crt-objects DESTDIR="${pkgdir}"
+  make install-mingwrt-libs DESTDIR="${pkgdir}"
+}
