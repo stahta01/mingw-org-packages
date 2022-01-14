@@ -38,26 +38,6 @@
 #ifndef __MINGW_FEATURES__
 #pragma GCC system_header
 
-/* Users are expected to customize this header, but it remains subject to
- * automatic updates by system software.  To ensure that any customisation
- * is not ovewritten, during such updates, it MUST observe the following:
- *
- * This header MUST define __MINGW_FEATURES__; the definition MUST begin
- * with "#define __MINGW_FEATURES__ (__MINGW_FEATURES_BEGIN__) \"; it MUST
- * extend over multiple lines, and terminate with "__MINGW_FEATURES_END__";
- * intervening lines may enumerate any defined features, one per line, and
- * each specified as an argument to either the __MINGW_FEATURE_ENABLE__(),
- * or the __MINGW_FEATURE_IGNORE__() macro, (ensuring that at least one
- * space separates either of these macro names from its parenthesized
- * argument name).
- *
- * CAUTION:
- * If customizing this features configuration, ALWAYS refer to features
- * using their designated symbolic constant names; NEVER usurp the use of
- * these symbolic constants for any other purpose, and NEVER assume that
- * any such constant has a specific value ... their definitions may vary
- * between distinct MinGW Runtime Library software releases!
- */
 #define __MINGW_FEATURES__    (__MINGW_FEATURES_BEGIN__)        \
  __MINGW_FEATURE_IGNORE__     (__MINGW_ANSI_STDIO__)            \
  __MINGW_FEATURE_IGNORE__     (__MINGW_LC_MESSAGES__)           \
