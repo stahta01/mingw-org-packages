@@ -3,7 +3,7 @@
 
 _realname=windows-default-manifest
 _mingw_suff=mingw-org-cross
-_install_prefix="/opt/cross-mingw-org"
+_install_prefix="/opt"
 pkgname=("${_mingw_suff}-${_realname}")
 groups=("${_mingw_suff}-toolchain" "${_mingw_suff}")
 pkgver=6.4
