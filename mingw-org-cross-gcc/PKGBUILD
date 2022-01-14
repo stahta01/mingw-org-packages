@@ -204,6 +204,7 @@ build() {
       --target=${_target} \
       --libexecdir=${_install_prefix}/lib \
       --disable-bootstrap \
+      --disable-nls \
       --with-arch=${_arch} \
       --with-tune=generic \
       --enable-languages=${_langs} \
