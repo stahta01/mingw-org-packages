@@ -19,7 +19,7 @@ _commit='0c111acc00bc15f5270535a71ee1601a3ed4a168'
 source=("${_sourcedir}"::"git://git.osdn.net/gitroot/mingw/mingw-org-wsl.git#commit=${_commit}"
         'features.h')
 sha256sums=('SKIP'
-            '4bbe20b8911f406c04b5329675e29ce1fff1b49e5b44f900ce308b3051a94e39')
+            '66b3fd839021d7aa4c4f41e2cd18f553aff354fe8205a66ef4c8a1d7133c39c6')
 
 pkgver() {
   cd "${srcdir}/${_sourcedir}"
