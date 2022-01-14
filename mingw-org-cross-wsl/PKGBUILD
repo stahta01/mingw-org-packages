@@ -2,7 +2,7 @@
 
 _mingw_suff=mingw-org-cross
 _target="i686-pc-mingw32"
-_install_prefix="/opt/cross-mingw-org"
+_install_prefix="/opt"
 
 _realname=wsl
 _sourcedir=${_realname}-git
