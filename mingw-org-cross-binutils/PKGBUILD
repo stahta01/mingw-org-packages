@@ -78,6 +78,7 @@ build() {
       --target=${_target} \
       --prefix=$_install_prefix \
       --disable-werror \
+      --disable-nls \
       --with-libiconv-prefix=/usr \
       $_conf
 
