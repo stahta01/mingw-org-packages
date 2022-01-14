@@ -3,7 +3,7 @@
 
 _realname=gcc
 _mingw_suff=mingw-org-cross
-_install_prefix="/opt/cross-mingw-org"
+_install_prefix="/opt"
 pkgname=("${_mingw_suff}-${_realname}")
 pkgver=10.2.0
 pkgrel=1
