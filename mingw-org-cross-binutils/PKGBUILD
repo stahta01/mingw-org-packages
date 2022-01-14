@@ -102,10 +102,6 @@ package() {
     make DESTDIR=${pkgdir} install
 
     # Remove unwanted files
-    #rm ${destdir}/usr/share/info/{configure,standards}.info
-
-    # Add some useful headers
-    #install -m644 ${srcdir}/binutils-${pkgver}/include/libiberty.h ${pkgdir}$_install_prefix/include
-    #install -m644 ${srcdir}/binutils-${pkgver}/include/demangle.h ${pkgdir}$_install_prefix/include
+    rm -rf ${pkgdir}${_install_prefix}/share/info
   done
 }
