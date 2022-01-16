@@ -1,7 +1,6 @@
 # Maintainer:  Tim Stahlhut <stahta01@gmail.com>
 
 _mingw_suff=mingw-org-cross
-_target="i686-pc-mingw32"
 _install_prefix="/opt"
 
 _realname=wsl
@@ -21,6 +20,8 @@ source=("${_sourcedir}"::"git://git.osdn.net/gitroot/mingw/mingw-org-wsl.git#com
 sha256sums=('SKIP'
             '66b3fd839021d7aa4c4f41e2cd18f553aff354fe8205a66ef4c8a1d7133c39c6')
 
+_targets="i686-pc-mingw32"
+
 pkgver() {
   cd "${srcdir}/${_sourcedir}"
 
@@ -37,67 +38,52 @@ prepare() {
 }
 
 build() {
-  cd "${srcdir}/${_sourcedir}/w32api"
-  mkdir -p "${srcdir}/build-w32api-${CHOST}" && cd "${srcdir}/build-w32api-${CHOST}"
+  for _target in ${_targets}; do
+    cd "${srcdir}/${_sourcedir}/w32api"
+    mkdir -p "${srcdir}/build-w32api-${_target}" && cd "${srcdir}/build-w32api-${_target}"
 
-  echo "CPPFLAGS := $CPPFLAGS"
-  echo "CFLAGS := $CFLAGS"
-  echo "CXXFLAGS := $CXXFLAGS"
-  echo "LDFLAGS := $LDFLAGS"
+    # MSys2 default flags are wrong for this package
+    CFLAGS='-pipe'
+    CXXFLAGS='-pipe'
 
-  # MSys2 default flags are wrong for this package
-  CFLAGS='-pipe'
-  CXXFLAGS='-pipe'
+    msg "Configuring w32api for ${_target}"
+    CC="${_target}-gcc" \
+    ../${_sourcedir}/w32api/configure \
+      --prefix="${_install_prefix}/${_target}" \
+      --host=${_target}
 
-  echo "after changing"
-  echo "CFLAGS := $CFLAGS"
-  echo "CXXFLAGS := $CXXFLAGS"
+    make
 
-  msg "Configuring w32api"
-  CC="${_target}-gcc" \
-  ../${_sourcedir}/w32api/configure \
-    --prefix="${_install_prefix}/${_target}" \
-    --host="i686-pc-mingw32"
+    msg "Installing local copy of w32api"
+    cd "${srcdir}/build-w32api-${_target}"
+    rm -fr ${srcdir}/temp-install-w32api${_install_prefix}
+    mkdir -p ${srcdir}/temp-install-w32api${_install_prefix}/${_target}
+    make DESTDIR=${srcdir}/temp-install-w32api install
 
-  make
+    msg "Copy extra headers to local copy of w32api"
+    cp --no-clobber ${srcdir}/build-w32api-${_target}/*.h ${srcdir}/temp-install-w32api${_install_prefix}/${_target}/include/
 
-  msg "Installing local copy of w32api"
-  cd "${srcdir}/build-w32api-${CHOST}"
-  rm -fr ${srcdir}/temp-install-w32api${_install_prefix}
-  mkdir -p ${srcdir}/temp-install-w32api${_install_prefix}/${_target}
-  make DESTDIR=${srcdir}/temp-install-w32api install
+    cd "${srcdir}/${_sourcedir}/mingwrt"
+    mkdir -p "${srcdir}/build-mingwrt-${_target}" && cd "${srcdir}/build-mingwrt-${_target}"
 
-  msg "Copy extra headers to local copy of w32api"
-  cp --no-clobber ${srcdir}/build-w32api-${CHOST}/*.h ${srcdir}/temp-install-w32api${_install_prefix}/${_target}/include/
+    msg "Configuring mingwrt for ${_target}"
+    CFLAGS+=" -I${srcdir}/temp-install-w32api${_install_prefix}/${_target}/include" \
+    CC="${_target}-gcc" \
+    ../${_sourcedir}/mingwrt/configure \
+      --prefix="${_install_prefix}/${_target}" \
+      --host=${_target}
 
-  cd "${srcdir}/${_sourcedir}/mingwrt"
-  mkdir -p "${srcdir}/build-mingwrt-${CHOST}" && cd "${srcdir}/build-mingwrt-${CHOST}"
-
-  msg "Configuring mingwrt"
-  CFLAGS+=" -I${srcdir}/temp-install-w32api${_install_prefix}/${_target}/include" \
-  CC="${_target}-gcc" \
-  ../${_sourcedir}/mingwrt/configure \
-    --prefix="${_install_prefix}/${_target}" \
-    --host="i686-pc-mingw32"
-
-  make # all-gcc
+    make
+  done
 }
 
-#check() {
-#  cd "${srcdir}/build-w32api-${CHOST}"
-#
-#  make check
-#}
-
 package() {
-#  msg "Copying w32api install files"
-#  mkdir -p ${pkgdir}${_install_prefix}/
-#  cp --recursive ${srcdir}/temp-install-w32api${_install_prefix}/ ${pkgdir}${_install_prefix}
+  for _target in ${_targets}; do
+    cd "${srcdir}/build-w32api-${_target}"
+    make install DESTDIR="${pkgdir}"
+    cp --no-clobber "${srcdir}/features.h" "${pkgdir}${_install_prefix}/${_target}/include/"
 
-  cd "${srcdir}/build-w32api-${CHOST}"
-  make install DESTDIR="${pkgdir}"
-  cp --no-clobber "${srcdir}/features.h" "${pkgdir}${_install_prefix}/${_target}/include/"
-
-  cd "${srcdir}/build-mingwrt-${CHOST}"
-  make install DESTDIR="${pkgdir}"
+    cd "${srcdir}/build-mingwrt-${_target}"
+    make install DESTDIR="${pkgdir}"
+  done
 }
