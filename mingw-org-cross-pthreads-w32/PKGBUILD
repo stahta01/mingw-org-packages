@@ -1,0 +1,64 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+
+_mingw_suff=mingw-org-cross
+_install_prefix="/opt"
+
+_realname=pthreads
+_sourcedir="${_realname}-win32-2.10"
+pkgbase=mingw-org-cross-${_realname}-w32
+pkgname=("${_mingw_suff}-${_realname}-w32-dev")
+pkgver=2.10
+pkgrel=1
+pkgdesc="Cross Windows Pthread library (mingw.org)"
+arch=('i686' 'x86_64')
+url='https://mingw.osdn.io/'
+license=('LICENSE')
+makedepends=()
+_commit='0c111acc00bc15f5270535a71ee1601a3ed4a168'
+source=("https://github.com/stahta01/mingw-org-wsl/releases/download/wsl-5.4.2-release/pthreads-w32-2.10-mingw32-pre-20160821-1-src.tar.xz")
+sha256sums=('65656ca366bdde52098791a987aa0d772185cfcd9104b574444fc24df95852af')
+
+_targets="i686-pc-mingw32"
+
+#pkgver() {
+#  cd "${srcdir}/${_sourcedir}"
+#
+#  local _version=$(head -n 34 VERSION.m4 | grep '__VERSION__' | sed -e 's/VERSION//' | sed -e 's/m4_define//' | sed -e 's/.* //' | tr -d '_,([])' | tr '\n' '.' | sed 's/.$/\n/')
+#
+#  printf "%s.g%s" "$_version" $(git rev-parse --short=8 ${_commit})
+#}
+
+prepare() {
+  cd "${srcdir}/${_sourcedir}"
+
+  for p in arch/mingw32/*.patch ; do patch -p1 < $p ; done
+}
+
+build() {
+  for _target in ${_targets}; do
+    cd "${srcdir}/${_sourcedir}"
+    mkdir -p "${srcdir}/build-${_target}" && cd "${srcdir}/build-${_target}"
+
+    # MSys2 default flags are wrong for this package
+    CFLAGS='-pipe'
+    CXXFLAGS='-pipe'
+
+    msg "Configuring pthreads for ${_target}"
+    CC="${_target}-gcc" \
+    ../${_sourcedir}/configure \
+      --prefix="${srcdir}/install-${_target}${_install_prefix}/${_target}" \
+      --host=${_target}
+
+    make GC
+
+  done
+}
+
+package() {
+  for _target in ${_targets}; do
+    cd "${srcdir}/build-${_target}"
+    mkdir -p "${srcdir}/install-${_target}${_install_prefix}/${_target}/include"
+    make install-headers
+    cp -rf "${srcdir}/install-${_target}/${_install_prefix}/" "${pkgdir}/"
+  done
+}
