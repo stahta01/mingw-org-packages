@@ -1,9 +1,11 @@
-mkdir -p packages/cross64bit && \
-cd mingw-org-cross-binutils && \
+mkdir -p packages/cross64bit  && \
+cd mingw-org-cross-binutils   && \
 cp mingw-org-cross-*-x86_64.pkg.tar.zst ../packages/cross64bit/ && \
-cd ../mingw-org-cross-wsl && \
+cd ../mingw-org-cross-wsl     && \
 cp mingw-org-cross-*-x86_64.pkg.tar.zst ../packages/cross64bit/ && \
-cd ../mingw-org-cross-gcc && \
+cd ../mingw-org-cross-gcc     && \
 cp mingw-org-cross-*-x86_64.pkg.tar.zst ../packages/cross64bit/ && \
-cd ../mingw-org-cross-windows-default-manifest&& \
+cd ../mingw-org-cross-zlib    && \
+cp mingw-org-cross-*-x86_64.pkg.tar.zst ../packages/cross64bit/ && \
+cd ../mingw-org-cross-windows-default-manifest                  && \
 cp mingw-org-cross-*-x86_64.pkg.tar.zst ../packages/cross64bit/
