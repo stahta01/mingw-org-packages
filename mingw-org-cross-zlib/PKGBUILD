@@ -1,0 +1,54 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
+
+_realname=zlib
+_mingw_suff=mingw-org-cross
+_install_prefix="/opt"
+pkgname=("${_mingw_suff}-${_realname}")
+pkgdesc="Compression library implementing the deflate compression method found in gzip and PKZIP"
+pkgver=1.2.11
+pkgrel=1
+arch=('i686' 'x86_64')
+url="https://mingw-w64.sourceforge.io/"
+license=('custom')
+groups=("${_mingw_suff}-toolchain" "${_mingw_suff}")
+depends=()
+makedepends=("${_mingw_suff}-gcc" 'autotools')
+options=('staticlibs' '!strip' '!libtool' '!emptydirs' '!buildflags')
+source=("https://zlib.net/current/${_realname}-${pkgver}.tar.gz"
+        01-zlib-1.2.11-1-buildsys.mingw.patch
+        02-no-undefined.mingw.patch
+        03-dont-put-sodir-into-L.mingw.patch)
+sha256sums=('c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1'
+            'ac91f905b695d71f6c9c471ac98c14a3ed989a1e2b2a3b1171b3f6dc6bfc31b4'
+            '44e23000cc4cb7502f303aa252be17ffee66384fe76a66607dc1f4df0a815030'
+            '3d039f42194aade91dadf4174f55fd6db349fd8044db93875bed1042dcfe1f31')
+
+_targets="i686-pc-mingw32"
+
+prepare() {
+  cd ${srcdir}/${_realname}-${pkgver}
+  grep -A 24 '^  Copyright' zlib.h > LICENSE
+
+  patch -p1 -i ${srcdir}/01-zlib-1.2.11-1-buildsys.mingw.patch
+  patch -p2 -i ${srcdir}/02-no-undefined.mingw.patch
+  patch -p2 -i ${srcdir}/03-dont-put-sodir-into-L.mingw.patch
+}
+
+build() {
+  for _target in ${_targets}; do
+    msg "Configuring ${_realname} for ${_target}"
+    cp -rf ${srcdir}/${_realname}-${pkgver} ${srcdir}/${_realname}-${_target}
+    cd ${srcdir}/${_realname}-${_target}
+    CHOST=${_target} ./configure --prefix=${_install_prefix}/${_target} --shared
+    make
+  done
+}
+
+package() {
+  for _target in ${_targets}; do
+    msg "Installing ${_realname} for ${_target}"
+    cd ${srcdir}/${_realname}-${_target}
+    make DESTDIR=${pkgdir} install
+  done
+}
