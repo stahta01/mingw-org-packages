@@ -13,7 +13,7 @@ pkgdesc="Cross Windows System Libraries (WSL) w32api and mingwrt (mingw.org)"
 arch=('i686' 'x86_64')
 url='https://mingw.osdn.io/'
 license=('LICENSE')
-makedepends=('git' 'autotools')
+makedepends=('git' 'autotools' "${_mingw_suff}-gcc")
 _commit='0c111acc00bc15f5270535a71ee1601a3ed4a168'
 source=("${_sourcedir}"::"git://git.osdn.net/gitroot/mingw/mingw-org-wsl.git#commit=${_commit}"
         'features.h')
