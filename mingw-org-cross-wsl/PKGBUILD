@@ -40,6 +40,7 @@ prepare() {
 build() {
   for _target in ${_targets}; do
     cd "${srcdir}/${_sourcedir}/w32api"
+    [[ -d "${srcdir}/build-w32api-${_target}" ]] && rm -rf "${srcdir}/build-w32api-${_target}"
     mkdir -p "${srcdir}/build-w32api-${_target}" && cd "${srcdir}/build-w32api-${_target}"
 
     # MSys2 default flags are wrong for this package
@@ -52,7 +53,9 @@ build() {
       --prefix="${_install_prefix}/${_target}" \
       --host=${_target}
 
-    make
+    make _mingw.h
+    make w32api.h
+    make # -j1
 
     msg "Installing local copy of w32api"
     cd "${srcdir}/build-w32api-${_target}"
@@ -64,6 +67,7 @@ build() {
     cp --no-clobber ${srcdir}/build-w32api-${_target}/*.h ${srcdir}/temp-install-w32api${_install_prefix}/${_target}/include/
 
     cd "${srcdir}/${_sourcedir}/mingwrt"
+    [[ -d "${srcdir}/build-mingwrt-${_target}" ]] && rm -rf "${srcdir}/build-mingwrt-${_target}"
     mkdir -p "${srcdir}/build-mingwrt-${_target}" && cd "${srcdir}/build-mingwrt-${_target}"
 
     msg "Configuring mingwrt for ${_target}"
