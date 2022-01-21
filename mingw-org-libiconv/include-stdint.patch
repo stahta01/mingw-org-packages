@@ -1,0 +1,10 @@
+--- libiconv-1.16/lib/iconv.c.org	2022-01-17 10:59:56.534688200 -0500
++++ libiconv-1.16/lib/iconv.c	2022-01-17 11:02:28.534382000 -0500
+@@ -171,6 +171,7 @@
+ #undef S
+ };
+ #ifdef _WIN32
++#include <stdint.h>
+ #define stringpool2 ((const char *) &stringpool2_contents)
+ static const struct alias sysdep_aliases[] = {
+ #define S(tag,name,encoding_index) { (intptr_t)&((struct stringpool2_t *)0)->stringpool_##tag, encoding_index },
