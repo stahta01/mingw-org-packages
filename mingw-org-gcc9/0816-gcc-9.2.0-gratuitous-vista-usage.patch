@@ -1,0 +1,73 @@
+diff --git a/libstdc++-v3/config/os/mingw32/error_constants.h b/libstdc++-v3/config/os/mingw32/error_constants.h
+--- a/libstdc++-v3/config/os/mingw32/error_constants.h
++++ b/libstdc++-v3/config/os/mingw32/error_constants.h
+@@ -31,10 +31,17 @@
+ #  define _GLIBCXX_ERROR_CONSTANTS
+ 
+ #include <bits/c++config.h>
+ #include <cerrno>
+ 
++#ifndef ELOOP
++#define ELOOP		2000
++#endif
++#ifndef EOVERFLOW
++#define EOVERFLOW	2001
++#endif
++
+ namespace std _GLIBCXX_VISIBILITY(default)
+ {
+ _GLIBCXX_BEGIN_NAMESPACE_VERSION
+ 
+ // Most of the commented-out error codes are socket-related and could be
+@@ -99,10 +106,12 @@ namespace std _GLIBCXX_VISIBILITY(defaul
+ //    not_a_stream = 				ENOSTR,
+ //    not_connected = 				ENOTCONN,
+       not_enough_memory = 			ENOMEM,
+ #ifdef _GLIBCXX_HAVE_ENOTSUP
+       not_supported = 				ENOTSUP,
++#else
++      not_supported = 				ENOSYS,
+ #endif
+ //    operation_canceled = 			ECANCELED,
+ //    operation_in_progress = 			EINPROGRESS,
+ #ifdef _GLIBCXX_HAVE_EPERM
+       operation_not_permitted = 		EPERM,
+@@ -125,16 +134,16 @@ namespace std _GLIBCXX_VISIBILITY(defaul
+ #ifdef _GLIBCXX_HAVE_ETIMEDOUT
+       timed_out = 				ETIMEDOUT,
+ #endif
+       too_many_files_open_in_system = 		ENFILE,
+       too_many_files_open = 			EMFILE,
+-      too_many_links = 				EMLINK
+-//    too_many_symbolic_link_levels = 		ELOOP,
+-#ifdef _GLIBCXX_HAVE_EOVERFLOW
+-	,
++      too_many_links =  			EMLINK,
++      too_many_symbolic_link_levels = 		ELOOP,
++//#ifdef _GLIBCXX_HAVE_EOVERFLOW
++//	,
+       value_too_large = 			EOVERFLOW
+-#endif
++//#endif
+ //    wrong_protocol_type = 			EPROTOTYPE
+    };
+ 
+ _GLIBCXX_END_NAMESPACE_VERSION
+ } // namespace
+diff --git a/libstdc++-v3/src/filesystem/ops-common.h b/libstdc++-v3/src/filesystem/ops-common.h
+--- a/libstdc++-v3/src/filesystem/ops-common.h
++++ b/libstdc++-v3/src/filesystem/ops-common.h
+@@ -41,10 +41,13 @@
+ # include <utime.h> // utime
+ #endif
+ 
+ #ifdef _GLIBCXX_FILESYSTEM_IS_WINDOWS
+ # include <wchar.h>
++# ifndef _off64_t
++# define _off64_t __off64_t
++# endif
+ #endif
+ 
+ #ifdef NEED_DO_COPY_FILE
+ # include <filesystem>
+ # include <ext/stdio_filebuf.h>
