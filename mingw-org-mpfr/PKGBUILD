@@ -1,0 +1,66 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
+# Contributor: Karlson2k (Evgeny Grin) <k2k@narod.ru>
+
+# MINGW_ARCH="mingw32" makepkg-mingw -Lf
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+_cross_prefix="/opt"
+
+_realname=mpfr
+pkgbase=mingw-org-${_realname}
+pkgname=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}")
+_pkgver=4.1.0
+pkgver=${_pkgver}.p13
+pkgrel=1
+pkgdesc="Multiple-precision floating-point library (mingw-org)"
+arch=('any')
+mingw_arch=('mingw32')
+license=('LGPL')
+options=('staticlibs')
+depends=("${PACKAGE_MINGW_ORG_PREFIX}-gmp")
+makedepends=('texinfo' "${PACKAGE_MINGW_ORG_PREFIX}-gmp" "${MINGW_PACKAGE_PREFIX}-autotools")
+source=(https://ftp.gnu.org/gnu/mpfr/${_realname}-${_pkgver}.tar.xz{,.sig}
+        patches.diff) # wget https://www.mpfr.org/mpfr-4.1.0/allpatches -O patches.diff
+sha256sums=('0c98a3f1732ff6ca4ea690552079da9c597872d30e96ec28414ee23c95558a7f'
+            'SKIP'
+            '75af77904037442fcd3061a4fee2394194716c542e96989dcfac2445c842daf1')
+validpgpkeys=('07F3DBBECC1A39605078094D980C197698C3739D')
+
+prepare() {
+  cd "${srcdir}/${_realname}-${_pkgver}"
+
+  patch -p1 -i ${srcdir}/patches.diff
+}
+
+build() {
+  [[ -d build-${MINGW_CHOST} ]] && rm -rf build-${MINGW_CHOST}
+  mkdir -p build-${MINGW_CHOST} && cd build-${MINGW_CHOST}
+
+  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  echo "PATH := $PATH"
+
+  CC="${_target}-gcc" \
+  ../${_realname}-${_pkgver}/configure \
+    --build=${_target} \
+    --prefix=${_install_prefix} \
+    --enable-static \
+    --disable-shared \
+    --with-gmp=${_install_prefix}
+
+  make
+}
+
+check() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make check
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make DESTDIR="${pkgdir}" install
+
+  rm -f "${pkgdir}${_install_prefix}/share/info/dir"
+}
