@@ -1,0 +1,62 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
+
+# MINGW_ARCH="mingw32" makepkg-mingw -Lf
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+_cross_prefix="/opt"
+
+_realname=isl
+pkgbase=mingw-org-${_realname}
+pkgname=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}")
+pkgver=0.24
+pkgrel=1
+pkgdesc="Library for manipulating sets and relations of integer points bounded by linear constraints (mingw-org)"
+arch=('any')
+mingw_arch=('mingw32')
+url="https://isl.gforge.inria.fr/"
+#depends=("${MINGW_PACKAGE_PREFIX}-gmp")
+makedepends=("${PACKAGE_MINGW_ORG_PREFIX}-gmp" "${MINGW_PACKAGE_PREFIX}-autotools")
+options=('staticlibs')
+license=('MIT')
+source=("ftp://gcc.gnu.org/pub/gcc/infrastructure/${_realname}-${pkgver}.tar.bz2"
+        isl-0.14.1-no-undefined.patch)
+sha256sums=('fcf78dd9656c10eb8cf9fbd5f59a0b6b01386205fe1934b3b287a0a1898145c0'
+            '83655a7202f0a0dcce1782d4b365252bf1ad12a522b7ad82ab578ee5ec46433b')
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+  patch -p1 -i ${srcdir}/isl-0.14.1-no-undefined.patch
+  autoreconf -fi
+}
+
+build() {
+  [[ -d ${srcdir}/build-${MINGW_CHOST} ]] && rm -rf ${srcdir}/build-${MINGW_CHOST}
+  mkdir -p ${srcdir}/build-${MINGW_CHOST} && cd ${srcdir}/build-${MINGW_CHOST}
+
+  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  echo "PATH := $PATH"
+
+  CC="${_target}-gcc" \
+  CXX="${_target}-g++" \
+  ../${_realname}-${pkgver}/configure \
+    --prefix=${_install_prefix} \
+    --build=${_target} \
+    --enable-static \
+    --disable-shared \
+    --with-gmp-prefix=${_install_prefix}
+
+  make
+}
+
+check() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make check
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make DESTDIR="${pkgdir}" install
+}
