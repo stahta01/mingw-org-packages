@@ -1,0 +1,100 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+
+# MINGW_ARCH="mingw32" makepkg-mingw -Lf
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+_cross_prefix="/opt"
+
+_realname=wsl
+_sourcedir=${_realname}-git
+pkgbase=mingw-org-${_realname}
+pkgname=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}")
+pkgver=5.4.3.g0c111acc
+pkgrel=1
+pkgdesc="Windows System Libraries (WSL) w32api and mingwrt (mingw.org)"
+arch=('any')
+mingw_arch=('mingw32')
+url='https://mingw.osdn.io/'
+license=('LICENSE')
+makedepends=('git' "${MINGW_PACKAGE_PREFIX}-autotools")
+_commit='0c111acc00bc15f5270535a71ee1601a3ed4a168'
+source=("${_sourcedir}"::"git://git.osdn.net/gitroot/mingw/mingw-org-wsl.git#commit=${_commit}"
+        'features.h')
+sha256sums=('SKIP'
+            '66b3fd839021d7aa4c4f41e2cd18f553aff354fe8205a66ef4c8a1d7133c39c6')
+
+pkgver() {
+  cd "${srcdir}/${_sourcedir}"
+
+  local _version=$(head -n 34 VERSION.m4 | grep '__VERSION__' | sed -e 's/VERSION//' | sed -e 's/m4_define//' | sed -e 's/.* //' | tr -d '_,([])' | tr '\n' '.' | sed 's/.$/\n/')
+
+  printf "%s.g%s" "$_version" $(git rev-parse --short=8 ${_commit})
+}
+
+prepare() {
+  cd "${srcdir}/${_sourcedir}"
+
+  cd w32api && autoconf -I ..
+  cd ../mingwrt && autoconf -I ..
+}
+
+build() {
+  cd "${srcdir}/${_sourcedir}/w32api"
+  mkdir -p "${srcdir}/build-w32api-${CHOST}" && cd "${srcdir}/build-w32api-${CHOST}"
+
+#  # MSys2 default flags are wrong for this package
+#  CFLAGS='-pipe'
+#  CXXFLAGS='-pipe'
+
+  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  echo "PATH := $PATH"
+
+  msg "Configuring w32api"
+  CFLAGS+=" -I${_cross_prefix}/${_target}/include" \
+  CC="${_target}-gcc" \
+  ../${_sourcedir}/w32api/configure \
+    --prefix="${_install_prefix}" \
+    --build=${MINGW_CHOST} \
+    --host=${_target}
+
+  make
+
+  msg "Installing local copy of w32api"
+  cd "${srcdir}/build-w32api-${CHOST}"
+  rm -fr ${srcdir}/temp-install-w32api${_install_prefix}
+  mkdir -p ${srcdir}/temp-install-w32api${_install_prefix}
+  make DESTDIR=${srcdir}/temp-install-w32api install
+
+  msg "Copy extra headers to local copy of w32api"
+  cp --no-clobber ${srcdir}/build-w32api-${CHOST}/*.h ${srcdir}/temp-install-w32api${_install_prefix}/include/
+
+  cd "${srcdir}/${_sourcedir}/mingwrt"
+  mkdir -p "${srcdir}/build-mingwrt-${CHOST}" && cd "${srcdir}/build-mingwrt-${CHOST}"
+
+  msg "Configuring mingwrt"
+  CFLAGS+=" -I${srcdir}/temp-install-w32api${_install_prefix}/include" \
+  CC="${_target}-gcc" \
+  ../${_sourcedir}/mingwrt/configure \
+    --prefix="${_install_prefix}" \
+    --build=${MINGW_CHOST} \
+    --host=${_target}
+
+  make
+}
+
+package() {
+  cd "${srcdir}/build-w32api-${CHOST}"
+  msg "Installing w32api"
+  make install DESTDIR="${pkgdir}"
+  cp --no-clobber "${srcdir}/features.h" "${pkgdir}${_install_prefix}/include/"
+
+  cd "${srcdir}/build-mingwrt-${CHOST}"
+  msg "Installing mingwrt"
+  mkdir -p "${pkgdir}${_install_prefix}/bin"
+  make install DESTDIR="${pkgdir}"
+
+#  # create header file if missing
+#  [[ ! -f "${pkgdir}${_install_prefix}/include/winternl.h" ]] && touch "${pkgdir}${_install_prefix}/include/winternl.h"
+}
