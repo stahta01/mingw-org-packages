@@ -1,0 +1,1601 @@
+From 68e6541b0665aab2af74fb65f28a702329c4da07 Mon Sep 17 00:00:00 2001
+From: Tim Stahlhut <stahta01@gmail.com>
+Date: Thu, 20 Jan 2022 22:55:03 -0500
+Subject: Disable GCC_NO_EXECUTABLES in libstdc++
+
+---
+ libstdc++-v3/configure    | 641 ++++++++------------------------------
+ libstdc++-v3/configure.ac |  50 +--
+ 2 files changed, 159 insertions(+), 532 deletions(-)
+
+diff --git a/libstdc++-v3/configure b/libstdc++-v3/configure
+index 5acf79cba54..9257677d031 100755
+--- a/libstdc++-v3/configure
++++ b/libstdc++-v3/configure
+@@ -2008,10 +2008,7 @@ $as_echo_n "checking for $2... " >&6; }
+ if eval \${$3+:} false; then :
+   $as_echo_n "(cached) " >&6
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ /* Define $2 to an innocuous variant, in case <limits.h> declares $2.
+    For example, HP-UX 11i <limits.h> declares gettimeofday.  */
+@@ -3175,32 +3172,33 @@ test -n "$target_alias" &&
+ target_alias=${target_alias-$host_alias}
+ 
+ # Handy for debugging:
+-#AC_MSG_NOTICE($build / $host / $target / $host_alias / $target_alias); sleep 5
+-
+-if test "$build" != "$host"; then
+-  # We are being configured with some form of cross compiler.
+-  GLIBCXX_IS_NATIVE=false
+-  case "$host","$target" in
+-    # Darwin crosses can use the host system's libraries and headers,
+-    # because of the fat library support.  Of course, it must be the
+-    # same version of Darwin on both sides.  Allow the user to
+-    # just say --target=foo-darwin without a version number to mean
+-    # "the version on this system".
+-      *-*-darwin*,*-*-darwin*)
+-	hostos=`echo $host | sed 's/.*-darwin/darwin/'`
+-	targetos=`echo $target | sed 's/.*-darwin/darwin/'`
+-	if test $hostos = $targetos -o $targetos = darwin ; then
+-	  GLIBCXX_IS_NATIVE=true
+-	fi
+-	;;
+-
+-      *)
+-
+-	;;
+-  esac
+-else
++{ $as_echo "$as_me:${as_lineno-$LINENO}: $build / $host / $target / $host_alias / $target_alias" >&5
++$as_echo "$as_me: $build / $host / $target / $host_alias / $target_alias" >&6;}; sleep 5
++
++#if test "$build" != "$host"; then
++#  # We are being configured with some form of cross compiler.
++#  GLIBCXX_IS_NATIVE=false
++#  case "$host","$target" in
++#    # Darwin crosses can use the host system's libraries and headers,
++#    # because of the fat library support.  Of course, it must be the
++#    # same version of Darwin on both sides.  Allow the user to
++#    # just say --target=foo-darwin without a version number to mean
++#    # "the version on this system".
++#      *-*-darwin*,*-*-darwin*)
++#	hostos=`echo $host | sed 's/.*-darwin/darwin/'`
++#	targetos=`echo $target | sed 's/.*-darwin/darwin/'`
++#	if test $hostos = $targetos -o $targetos = darwin ; then
++#	  GLIBCXX_IS_NATIVE=true
++#	fi
++#	;;
++#
++#      *)
++#	GCC_NO_EXECUTABLES
++#	;;
++#  esac
++#else
+   GLIBCXX_IS_NATIVE=true
+-fi
++#fi
+ 
+ # Sets up automake.  Must come after AC_CANONICAL_SYSTEM.  Each of the
+ # following is magically included in AUTOMAKE_OPTIONS in each Makefile.am.
+@@ -4123,34 +4121,6 @@ done
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+-int
+-main ()
+-{
+-
+-  ;
+-  return 0;
+-}
+-_ACEOF
+-# FIXME: Cleanup?
+-if { { eval echo "\"\$as_me\":${as_lineno-$LINENO}: \"$ac_link\""; } >&5
+-  (eval $ac_link) 2>&5
+-  ac_status=$?
+-  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+-  test $ac_status = 0; }; then :
+-  gcc_no_link=no
+-else
+-  gcc_no_link=yes
+-fi
+-if test x$gcc_no_link = xyes; then
+-  # Setting cross_compile will disable run tests; it will
+-  # also disable AC_CHECK_FILE but that's generally
+-  # correct if we can't link.
+-  cross_compiling=yes
+-  EXEEXT=
+-else
+-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+-/* end confdefs.h.  */
+-
+ int
+ main ()
+ {
+@@ -4347,7 +4317,6 @@ $as_echo "$cross_compiling" >&6; }
+ 
+ rm -f conftest.$ac_ext conftest$ac_cv_exeext conftest.out
+ ac_clean_files=$ac_clean_files_save
+-fi
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for suffix of object files" >&5
+ $as_echo_n "checking for suffix of object files... " >&6; }
+ if ${ac_cv_objext+:} false; then :
+@@ -7519,10 +7488,7 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ ac_compiler_gnu=$ac_cv_c_compiler_gnu
+ 
+-     if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++     cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -8108,10 +8074,7 @@ else
+       save_LDFLAGS=$LDFLAGS
+       echo "_main" > conftest.sym
+       LDFLAGS="$LDFLAGS -Wl,-exported_symbols_list,conftest.sym"
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -9875,10 +9838,7 @@ _LT_EOF
+ 	allow_undefined_flag='-berok'
+         # Determine the default libpath from the value encoded in an
+         # empty executable.
+-        if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -9918,10 +9878,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
+ 	else
+ 	 # Determine the default libpath from the value encoded in an
+ 	 # empty executable.
+-	 if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -10204,10 +10161,7 @@ fi
+ 	# implicitly export all symbols.
+         save_LDFLAGS="$LDFLAGS"
+         LDFLAGS="$LDFLAGS -shared ${wl}-exported_symbol ${wl}foo ${wl}-update_registry ${wl}/dev/null"
+-        if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ int foo(void) {}
+ _ACEOF
+@@ -11157,10 +11111,7 @@ else
+     save_libdir=$libdir
+     eval "libdir=/foo; wl=\"$lt_prog_compiler_wl\"; \
+ 	 LDFLAGS=\"\$LDFLAGS $hardcode_libdir_flag_spec\""
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -11577,9 +11528,6 @@ if ${ac_cv_lib_dl_dlopen+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-ldl  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -11633,9 +11581,6 @@ if ${ac_cv_lib_dld_shl_load+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-ldld  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -11679,9 +11624,6 @@ if ${ac_cv_lib_dl_dlopen+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-ldl  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -11721,9 +11663,6 @@ if ${ac_cv_lib_svld_dlopen+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lsvld  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -11763,9 +11702,6 @@ if ${ac_cv_lib_dld_dld_link+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-ldld  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -11845,7 +11781,7 @@ else
+   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
+   lt_status=$lt_dlunknown
+   cat > conftest.$ac_ext <<_LT_EOF
+-#line 11848 "configure"
++#line 11784 "configure"
+ #include "confdefs.h"
+ 
+ #if HAVE_DLFCN_H
+@@ -11951,7 +11887,7 @@ else
+   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
+   lt_status=$lt_dlunknown
+   cat > conftest.$ac_ext <<_LT_EOF
+-#line 11954 "configure"
++#line 11890 "configure"
+ #include "confdefs.h"
+ 
+ #if HAVE_DLFCN_H
+@@ -12689,10 +12625,7 @@ $as_echo_n "checking whether the $compiler linker ($LD) supports shared librarie
+           allow_undefined_flag_CXX='-berok'
+           # Determine the default libpath from the value encoded in an empty
+           # executable.
+-          if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++          cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -12733,10 +12666,7 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
+           else
+ 	    # Determine the default libpath from the value encoded in an
+ 	    # empty executable.
+-	    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -14841,10 +14771,7 @@ else
+     save_libdir=$libdir
+     eval "libdir=/foo; wl=\"$lt_prog_compiler_wl_CXX\"; \
+ 	 LDFLAGS=\"\$LDFLAGS $hardcode_libdir_flag_spec_CXX\""
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -15465,10 +15392,7 @@ $as_echo_n "checking for atomic builtins for bool... " >&6; }
+   $as_echo_n "(cached) " >&6
+ else
+ 
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -15507,10 +15431,7 @@ $as_echo_n "checking for atomic builtins for short... " >&6; }
+   $as_echo_n "(cached) " >&6
+ else
+ 
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -15549,10 +15470,7 @@ $as_echo_n "checking for atomic builtins for int... " >&6; }
+   $as_echo_n "(cached) " >&6
+ else
+ 
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -15591,10 +15509,7 @@ $as_echo_n "checking for atomic builtins for long long... " >&6; }
+   $as_echo_n "(cached) " >&6
+ else
+ 
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -15637,7 +15552,7 @@ $as_echo "$glibcxx_cv_atomic_long_long" >&6; }
+   # Fake what AC_TRY_COMPILE does.
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15640 "configure"
++#line 15555 "configure"
+ int main()
+ {
+   typedef bool atomic_type;
+@@ -15672,7 +15587,7 @@ $as_echo "$glibcxx_cv_atomic_bool" >&6; }
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15675 "configure"
++#line 15590 "configure"
+ int main()
+ {
+   typedef short atomic_type;
+@@ -15707,7 +15622,7 @@ $as_echo "$glibcxx_cv_atomic_short" >&6; }
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15710 "configure"
++#line 15625 "configure"
+ int main()
+ {
+   // NB: _Atomic_word not necessarily int.
+@@ -15743,7 +15658,7 @@ $as_echo "$glibcxx_cv_atomic_int" >&6; }
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15746 "configure"
++#line 15661 "configure"
+ int main()
+ {
+   typedef long long atomic_type;
+@@ -15896,7 +15811,7 @@ $as_echo "mutex" >&6; }
+   # unnecessary for this test.
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15899 "configure"
++#line 15814 "configure"
+ int main()
+ {
+   _Decimal32 d1;
+@@ -15938,7 +15853,7 @@ ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+   # unnecessary for this test.
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15941 "configure"
++#line 15856 "configure"
+ template<typename T1, typename T2>
+   struct same
+   { typedef T2 type; };
+@@ -15972,7 +15887,7 @@ $as_echo "$enable_int128" >&6; }
+     rm -f conftest*
+ 
+     cat > conftest.$ac_ext << EOF
+-#line 15975 "configure"
++#line 15890 "configure"
+ template<typename T1, typename T2>
+   struct same
+   { typedef T2 type; };
+@@ -16475,10 +16390,7 @@ for ac_lib in '' intl; do
+     ac_res=-l$ac_lib
+     LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+   fi
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-if ac_fn_c_try_link "$LINENO"; then :
++  if ac_fn_c_try_link "$LINENO"; then :
+   ac_cv_search_gettext=$ac_res
+ fi
+ rm -f core conftest.err conftest.$ac_objext \
+@@ -16884,9 +16796,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -16968,10 +16877,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <math.h>
+          volatile double d1, d2;
+@@ -17122,10 +17028,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <complex.h>
+            typedef __complex__ float float_type;
+@@ -17240,10 +17143,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdio.h>
+          #include <stdarg.h>
+@@ -17324,10 +17224,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+          volatile float f;
+@@ -17565,9 +17462,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -17649,10 +17543,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <math.h>
+          volatile double d1, d2;
+@@ -17803,10 +17694,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <complex.h>
+            typedef __complex__ float float_type;
+@@ -17921,10 +17809,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdio.h>
+          #include <stdarg.h>
+@@ -18005,10 +17890,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+          volatile float f;
+@@ -19623,10 +19505,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <unistd.h>
+        #include <stdio.h>
+@@ -19726,10 +19605,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <poll.h>
+ int
+@@ -19808,10 +19684,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <sys/stat.h>
+ int
+@@ -19860,10 +19733,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <sys/stat.h>
+ int
+@@ -19962,10 +19832,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <sys/uio.h>
+ int
+@@ -20749,10 +20616,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <sys/time.h>
+ int
+@@ -20922,10 +20786,7 @@ for ac_lib in '' rt posix4; do
+     ac_res=-l$ac_lib
+     LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+   fi
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-if ac_fn_cxx_try_link "$LINENO"; then :
++  if ac_fn_cxx_try_link "$LINENO"; then :
+   ac_cv_search_clock_gettime=$ac_res
+ fi
+ rm -f core conftest.err conftest.$ac_objext \
+@@ -20981,10 +20842,7 @@ for ac_lib in '' rt posix4; do
+     ac_res=-l$ac_lib
+     LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+   fi
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-if ac_fn_cxx_try_link "$LINENO"; then :
++  if ac_fn_cxx_try_link "$LINENO"; then :
+   ac_cv_search_nanosleep=$ac_res
+ fi
+ rm -f core conftest.err conftest.$ac_objext \
+@@ -21041,10 +20899,7 @@ for ac_lib in '' posix4; do
+     ac_res=-l$ac_lib
+     LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+   fi
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-if ac_fn_cxx_try_link "$LINENO"; then :
++  if ac_fn_cxx_try_link "$LINENO"; then :
+   ac_cv_search_clock_gettime=$ac_res
+ fi
+ rm -f core conftest.err conftest.$ac_objext \
+@@ -21100,10 +20955,7 @@ for ac_lib in '' posix4; do
+     ac_res=-l$ac_lib
+     LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+   fi
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-if ac_fn_cxx_try_link "$LINENO"; then :
++  if ac_fn_cxx_try_link "$LINENO"; then :
+   ac_cv_search_nanosleep=$ac_res
+ fi
+ rm -f core conftest.err conftest.$ac_objext \
+@@ -21170,10 +21022,7 @@ for ac_lib in '' rt posix4; do
+     ac_res=-l$ac_lib
+     LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+   fi
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-if ac_fn_cxx_try_link "$LINENO"; then :
++  if ac_fn_cxx_try_link "$LINENO"; then :
+   ac_cv_search_sched_yield=$ac_res
+ fi
+ rm -f core conftest.err conftest.$ac_objext \
+@@ -21233,10 +21082,7 @@ done
+     if test x"$ac_has_unistd_h" = x"yes"; then
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for monotonic clock" >&5
+ $as_echo_n "checking for monotonic clock... " >&6; }
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <unistd.h>
+ 	 #include <time.h>
+@@ -21266,10 +21112,7 @@ $as_echo "$ac_has_clock_monotonic" >&6; }
+ 
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for realtime clock" >&5
+ $as_echo_n "checking for realtime clock... " >&6; }
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <unistd.h>
+ 	 #include <time.h>
+@@ -21299,10 +21142,7 @@ $as_echo "$ac_has_clock_realtime" >&6; }
+ 
+       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for nanosleep" >&5
+ $as_echo_n "checking for nanosleep... " >&6; }
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <unistd.h>
+ 	 #include <time.h>
+@@ -21527,10 +21367,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdio.h>
+ int
+@@ -21658,10 +21495,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <sys/sysinfo.h>
+ int
+@@ -21748,10 +21582,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <unistd.h>
+ int
+@@ -21826,10 +21657,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <unistd.h>
+ int
+@@ -21904,10 +21732,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <pthread.h>
+ int
+@@ -21990,10 +21815,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+        #include <stddef.h>
+@@ -22314,10 +22136,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -22397,9 +22216,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -28210,10 +28026,7 @@ if ${gcc_cv_have_tls+:} false; then :
+ else
+ 
+     if test "$cross_compiling" = yes; then :
+-                if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++                cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ __thread int a; int b; int main() { return a = b; }
+ _ACEOF
+@@ -28226,18 +28039,12 @@ if ac_fn_c_try_link "$LINENO"; then :
+ 	  esac
+ 	  chktls_save_CFLAGS="$CFLAGS"
+ 	  CFLAGS="-fPIC $CFLAGS"
+-	  	  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	  	  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ int f() { return 0; }
+ _ACEOF
+ if ac_fn_c_try_link "$LINENO"; then :
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ __thread int a; int b; int f() { return a = b; }
+ _ACEOF
+@@ -28270,10 +28077,7 @@ _ACEOF
+ if ac_fn_c_try_run "$LINENO"; then :
+                       chktls_save_LDFLAGS="$LDFLAGS"
+       LDFLAGS="-static $LDFLAGS"
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ int main() { return 0; }
+ _ACEOF
+@@ -28308,10 +28112,7 @@ rm -f core conftest.err conftest.$ac_objext \
+ 	thread_CFLAGS=failed
+ 	for flag in '' '-pthread' '-lpthread'; do
+ 	  CFLAGS="$flag $chktls_save_CFLAGS"
+-	  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <pthread.h>
+ 		void *g(void *d) { return NULL; }
+@@ -29016,10 +28817,7 @@ else
+     am_cv_lib_iconv=no
+                     am_save_CPPFLAGS="$CPPFLAGS"
+     CPPFLAGS="$CPPFLAGS $INCICONV"
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -29046,10 +28844,7 @@ rm -f core conftest.err conftest.$ac_objext \
+         am_save_LIBS="$LIBS"
+         CPPFLAGS="$CPPFLAGS -I../libiconv/include"
+         LIBS="$LIBS ../libiconv/lib/$_libs/libiconv.a"
+-        if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -29085,10 +28880,7 @@ rm -f core conftest.err conftest.$ac_objext \
+       am_save_LIBS="$LIBS"
+       CPPFLAGS="$CPPFLAGS $INCICONV"
+       LIBS="$LIBS $LIBICONV"
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -29481,10 +29273,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -29564,9 +29353,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -35459,10 +35245,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -35542,9 +35325,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -41310,10 +41090,7 @@ else
+     am_cv_lib_iconv=no
+                     am_save_CPPFLAGS="$CPPFLAGS"
+     CPPFLAGS="$CPPFLAGS $INCICONV"
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -41340,10 +41117,7 @@ rm -f core conftest.err conftest.$ac_objext \
+         am_save_LIBS="$LIBS"
+         CPPFLAGS="$CPPFLAGS -I../libiconv/include"
+         LIBS="$LIBS ../libiconv/lib/$_libs/libiconv.a"
+-        if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -41379,10 +41153,7 @@ rm -f core conftest.err conftest.$ac_objext \
+       am_save_LIBS="$LIBS"
+       CPPFLAGS="$CPPFLAGS $INCICONV"
+       LIBS="$LIBS $LIBICONV"
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -41571,10 +41342,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -41654,9 +41422,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -47428,10 +47193,7 @@ else
+     am_cv_lib_iconv=no
+                     am_save_CPPFLAGS="$CPPFLAGS"
+     CPPFLAGS="$CPPFLAGS $INCICONV"
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -47458,10 +47220,7 @@ rm -f core conftest.err conftest.$ac_objext \
+         am_save_LIBS="$LIBS"
+         CPPFLAGS="$CPPFLAGS -I../libiconv/include"
+         LIBS="$LIBS ../libiconv/lib/$_libs/libiconv.a"
+-        if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -47497,10 +47256,7 @@ rm -f core conftest.err conftest.$ac_objext \
+       am_save_LIBS="$LIBS"
+       CPPFLAGS="$CPPFLAGS $INCICONV"
+       LIBS="$LIBS $LIBICONV"
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -47638,9 +47394,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -53478,10 +53231,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -53743,10 +53493,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -53885,10 +53632,7 @@ if ${gcc_cv_have_tls+:} false; then :
+ else
+ 
+     if test "$cross_compiling" = yes; then :
+-                if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++                cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ __thread int a; int b; int main() { return a = b; }
+ _ACEOF
+@@ -53901,18 +53645,12 @@ if ac_fn_c_try_link "$LINENO"; then :
+ 	  esac
+ 	  chktls_save_CFLAGS="$CFLAGS"
+ 	  CFLAGS="-fPIC $CFLAGS"
+-	  	  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	  	  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ int f() { return 0; }
+ _ACEOF
+ if ac_fn_c_try_link "$LINENO"; then :
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ __thread int a; int b; int f() { return a = b; }
+ _ACEOF
+@@ -53945,10 +53683,7 @@ _ACEOF
+ if ac_fn_c_try_run "$LINENO"; then :
+                       chktls_save_LDFLAGS="$LDFLAGS"
+       LDFLAGS="-static $LDFLAGS"
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ int main() { return 0; }
+ _ACEOF
+@@ -53983,10 +53718,7 @@ rm -f core conftest.err conftest.$ac_objext \
+ 	thread_CFLAGS=failed
+ 	for flag in '' '-pthread' '-lpthread'; do
+ 	  CFLAGS="$flag $chktls_save_CFLAGS"
+-	  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <pthread.h>
+ 		void *g(void *d) { return NULL; }
+@@ -54210,10 +53942,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -54293,9 +54022,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -60072,10 +59798,7 @@ if ${gcc_cv_have_tls+:} false; then :
+ else
+ 
+     if test "$cross_compiling" = yes; then :
+-                if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++                cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ __thread int a; int b; int main() { return a = b; }
+ _ACEOF
+@@ -60088,18 +59811,12 @@ if ac_fn_c_try_link "$LINENO"; then :
+ 	  esac
+ 	  chktls_save_CFLAGS="$CFLAGS"
+ 	  CFLAGS="-fPIC $CFLAGS"
+-	  	  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	  	  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ int f() { return 0; }
+ _ACEOF
+ if ac_fn_c_try_link "$LINENO"; then :
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ __thread int a; int b; int f() { return a = b; }
+ _ACEOF
+@@ -60132,10 +59849,7 @@ _ACEOF
+ if ac_fn_c_try_run "$LINENO"; then :
+                       chktls_save_LDFLAGS="$LDFLAGS"
+       LDFLAGS="-static $LDFLAGS"
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ int main() { return 0; }
+ _ACEOF
+@@ -60170,10 +59884,7 @@ rm -f core conftest.err conftest.$ac_objext \
+ 	thread_CFLAGS=failed
+ 	for flag in '' '-pthread' '-lpthread'; do
+ 	  CFLAGS="$flag $chktls_save_CFLAGS"
+-	  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <pthread.h>
+ 		void *g(void *d) { return NULL; }
+@@ -60318,10 +60029,7 @@ else
+     am_cv_lib_iconv=no
+                     am_save_CPPFLAGS="$CPPFLAGS"
+     CPPFLAGS="$CPPFLAGS $INCICONV"
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -60348,10 +60056,7 @@ rm -f core conftest.err conftest.$ac_objext \
+         am_save_LIBS="$LIBS"
+         CPPFLAGS="$CPPFLAGS -I../libiconv/include"
+         LIBS="$LIBS ../libiconv/lib/$_libs/libiconv.a"
+-        if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -60387,10 +60092,7 @@ rm -f core conftest.err conftest.$ac_objext \
+       am_save_LIBS="$LIBS"
+       CPPFLAGS="$CPPFLAGS $INCICONV"
+       LIBS="$LIBS $LIBICONV"
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <stdlib.h>
+ #include <iconv.h>
+@@ -60578,10 +60280,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -60661,9 +60360,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -66509,10 +66205,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -66710,10 +66403,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -66930,10 +66620,7 @@ $as_echo "$glibcxx_gnu_ld_version" >&6; }
+     # Check for -Wl,--gc-sections
+     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ld that supports -Wl,--gc-sections" >&5
+ $as_echo_n "checking for ld that supports -Wl,--gc-sections... " >&6; }
+-    if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++    cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  int one(void) { return 1; }
+      int two(void) { return 2; }
+@@ -67013,9 +66700,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -72817,9 +72501,6 @@ if ${ac_cv_lib_m_sin+:} false; then :
+ else
+   ac_check_lib_save_LIBS=$LIBS
+ LIBS="-lm  $LIBS"
+-if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+@@ -78735,10 +78416,7 @@ case "$target" in
+ 	# if programs are run by default against NPTL and if not, issue
+ 	# a warning.
+ 	enable_linux_futex=no
+-	if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <sys/syscall.h>
+ 	   int lk;
+@@ -78753,10 +78431,7 @@ _ACEOF
+ if ac_fn_c_try_link "$LINENO"; then :
+   save_LIBS="$LIBS"
+ 	   LIBS="-lpthread $LIBS"
+-	   if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #ifndef _GNU_SOURCE
+ 	     #define _GNU_SOURCE 1
+@@ -78793,10 +78468,7 @@ rm -f core conftest.err conftest.$ac_objext \
+     conftest$ac_exeext conftest.$ac_ext
+ 	;;
+       yes)
+-	if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <sys/syscall.h>
+ 	   int lk;
+@@ -79368,10 +79040,7 @@ if test $enable_symvers = gnu ||
+ $as_echo_n "checking for shared libgcc... " >&6; }
+   ac_save_CFLAGS="$CFLAGS"
+   CFLAGS=' -lgcc_s'
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -79401,10 +79070,7 @@ EOF
+     rm -f conftest.c conftest.so
+     if test x${glibcxx_libgcc_s_suffix+set} = xset; then
+       CFLAGS=" -lgcc_s$glibcxx_libgcc_s_suffix"
+-      if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++      cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+ int
+@@ -80409,10 +80075,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <dirent.h>
+ int
+@@ -80480,10 +80143,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+          #include <limits.h>
+@@ -80554,10 +80214,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+           #include <fcntl.h>
+@@ -80621,10 +80278,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+           #include <utime.h>
+@@ -80685,10 +80339,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  #include <sys/stat.h>
+ int
+@@ -80747,10 +80398,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+  #include <sys/stat.h>
+ int
+@@ -80806,10 +80454,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <sys/stat.h>
+ int
+@@ -80865,10 +80510,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ 
+           #include <fcntl.h>
+@@ -80926,10 +80568,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <sys/sendfile.h>
+ int
+@@ -80987,10 +80626,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <unistd.h>
+ int
+@@ -81043,10 +80679,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <unistd.h>
+ int
+@@ -81099,10 +80732,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <unistd.h>
+ int
+@@ -81155,10 +80785,7 @@ else
+ fi
+ rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ else
+-  if test x$gcc_no_link = xyes; then
+-  as_fn_error $? "Link tests are not allowed after GCC_NO_EXECUTABLES." "$LINENO" 5
+-fi
+-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
++  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <unistd.h>
+ int
+diff --git a/libstdc++-v3/configure.ac b/libstdc++-v3/configure.ac
+index dadd8827b49..bc0192bdbaa 100644
+--- a/libstdc++-v3/configure.ac
++++ b/libstdc++-v3/configure.ac
+@@ -31,32 +31,32 @@ AC_CANONICAL_SYSTEM
+ target_alias=${target_alias-$host_alias}
+ 
+ # Handy for debugging:
+-#AC_MSG_NOTICE($build / $host / $target / $host_alias / $target_alias); sleep 5
+-
+-if test "$build" != "$host"; then
+-  # We are being configured with some form of cross compiler.
+-  GLIBCXX_IS_NATIVE=false
+-  case "$host","$target" in
+-    # Darwin crosses can use the host system's libraries and headers,
+-    # because of the fat library support.  Of course, it must be the
+-    # same version of Darwin on both sides.  Allow the user to
+-    # just say --target=foo-darwin without a version number to mean
+-    # "the version on this system".
+-      *-*-darwin*,*-*-darwin*)
+-	hostos=`echo $host | sed 's/.*-darwin/darwin/'`
+-	targetos=`echo $target | sed 's/.*-darwin/darwin/'`
+-	if test $hostos = $targetos -o $targetos = darwin ; then
+-	  GLIBCXX_IS_NATIVE=true
+-	fi
+-	;;
+-
+-      *)
+-	GCC_NO_EXECUTABLES
+-	;;
+-  esac
+-else
++AC_MSG_NOTICE($build / $host / $target / $host_alias / $target_alias); sleep 5
++
++#if test "$build" != "$host"; then
++#  # We are being configured with some form of cross compiler.
++#  GLIBCXX_IS_NATIVE=false
++#  case "$host","$target" in
++#    # Darwin crosses can use the host system's libraries and headers,
++#    # because of the fat library support.  Of course, it must be the
++#    # same version of Darwin on both sides.  Allow the user to
++#    # just say --target=foo-darwin without a version number to mean
++#    # "the version on this system".
++#      *-*-darwin*,*-*-darwin*)
++#	hostos=`echo $host | sed 's/.*-darwin/darwin/'`
++#	targetos=`echo $target | sed 's/.*-darwin/darwin/'`
++#	if test $hostos = $targetos -o $targetos = darwin ; then
++#	  GLIBCXX_IS_NATIVE=true
++#	fi
++#	;;
++#
++#      *)
++#	GCC_NO_EXECUTABLES
++#	;;
++#  esac
++#else
+   GLIBCXX_IS_NATIVE=true
+-fi
++#fi
+ 
+ # Sets up automake.  Must come after AC_CANONICAL_SYSTEM.  Each of the
+ # following is magically included in AUTOMAKE_OPTIONS in each Makefile.am.
+-- 
+2.34.1.windows.1
+
