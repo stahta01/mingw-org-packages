@@ -1,0 +1,48 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
+
+# MINGW_ARCH="mingw32" makepkg-mingw -Lf
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+_cross_prefix="/opt"
+
+_realname=windows-default-manifest
+pkgbase=mingw-org-${_realname}
+pkgname="${PACKAGE_MINGW_ORG_PREFIX}-${_realname}"
+pkgver=6.4
+pkgrel=1
+pkgdesc='Default Windows application manifest (mingw-org)'
+url='https://cygwin.com/'
+arch=('any')
+mingw_arch=('mingw32')
+license=('BSD')
+# "${PACKAGE_MINGW_ORG_PREFIX}-gcc" 
+makedepends=('git' "${MINGW_PACKAGE_PREFIX}-autotools")
+_GIT_TAG="release-6_4"
+source=("git+https://sourceware.org/git/cygwin-apps/${_realname}.git#tag=${_GIT_TAG}")
+sha256sums=('SKIP')
+
+build() {
+  [[ -d ${srcdir}/build-${MINGW_CHOST} ]] && rm -rf ${srcdir}/build-${MINGW_CHOST}
+
+  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  echo "PATH := $PATH"
+
+  cp -rf ${srcdir}/${_realname} ${srcdir}/build-${MINGW_CHOST}
+  cd ${srcdir}/build-${MINGW_CHOST}
+
+  CC="${_target}-gcc" \
+  WINDRES="${_target}-windres" \
+  ./configure \
+    --prefix=${_install_prefix} \
+    --build=${MINGW_CHOST} \
+    --host=${_target}
+  make
+}
+
+package() {
+  cd ${srcdir}/build-${MINGW_CHOST}
+  make DESTDIR=${pkgdir} install
+}
