@@ -59,6 +59,8 @@ build() {
     --build=${MINGW_CHOST} \
     --host=${_target}
 
+  make _mingw.h
+
   make
 
   msg "Installing local copy of w32api"
