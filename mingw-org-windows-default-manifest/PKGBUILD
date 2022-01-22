@@ -6,7 +6,6 @@
 PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
 _target="i686-pc-mingw32"
 _install_prefix="/mingw-org"
-_cross_prefix="/opt"
 
 _realname=windows-default-manifest
 pkgbase=mingw-org-${_realname}
@@ -27,14 +26,13 @@ sha256sums=('SKIP')
 build() {
   [[ -d ${srcdir}/build-${MINGW_CHOST} ]] && rm -rf ${srcdir}/build-${MINGW_CHOST}
 
-  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
   cp -rf ${srcdir}/${_realname} ${srcdir}/build-${MINGW_CHOST}
   cd ${srcdir}/build-${MINGW_CHOST}
 
   CC="${_target}-gcc" \
-  WINDRES="${_target}-windres" \
   ./configure \
     --prefix=${_install_prefix} \
     --build=${MINGW_CHOST} \
