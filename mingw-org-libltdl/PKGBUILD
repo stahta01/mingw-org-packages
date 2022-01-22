@@ -1,0 +1,60 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
+# Contributor: Ray Donnelly <mingw.android@gmail.com>
+
+# MINGW_ARCH="mingw32" makepkg-mingw -Lf
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+_cross_prefix="/opt"
+
+_realname=libltdl
+_parentname=libtool
+pkgbase=mingw-w64-${_realname}
+pkgname="${PACKAGE_MINGW_ORG_PREFIX}-${_realname}"
+pkgver=2.4.6
+pkgrel=1
+pkgdesc="A system independent dlopen wrapper for GNU libtool (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32')
+url="https://www.gnu.org/software/libtool"
+license=("GPL")
+makedepends=("${MINGW_PACKAGE_PREFIX}-autotools") # "${MINGW_PACKAGE_PREFIX}-cc")
+provides=("${PACKAGE_MINGW_ORG_PREFIX}-libtool")
+conflicts=("${PACKAGE_MINGW_ORG_PREFIX}-libtool")
+replaces=("${PACKAGE_MINGW_ORG_PREFIX}-libtool")
+source=("https://ftp.gnu.org/pub/gnu/libtool/${_parentname}-${pkgver}.tar.xz"{,.sig})
+sha256sums=('7c87a8c2c8c0fc9cd5019e402bed4292462d00a718a7cd5f11218153bf28b26f'
+            'SKIP')
+validpgpkeys=('CFE2BE707B538E8B26757D84151308092983D606') #Gary Vaughan (Free Software Developer) <gary@vaughan.pe>
+
+prepare() {
+  cd ${srcdir}/${_parentname}-${pkgver}/libltdl
+
+  autoreconf -fvi
+}
+
+build() {
+  mkdir -p ${srcdir}/build-${MINGW_CHOST} && cd ${srcdir}/build-${MINGW_CHOST}
+
+  export lt_cv_deplibs_check_method='pass_all'
+
+  export PATH=${_install_prefix}/bin:$PATH
+
+  CC="${_target}-gcc" \
+  ../${_parentname}-${pkgver}/libltdl/configure \
+      --prefix=${_install_prefix} \
+      --build=${_target} \
+      --host=${_target} \
+      --target=${_target} \
+      --enable-ltdl-install
+
+  make
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  make DESTDIR="${pkgdir}" install
+}
