@@ -304,7 +304,7 @@ build() {
     sed -i 's,^STRIP_FOR_TARGET=.*$,STRIP_FOR_TARGET=true,g' Makefile
   fi
 
-  make V=1 all
+  make -j1 V=1 all
 
   rm -rf ${srcdir}${_install_prefix}
 
