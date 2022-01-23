@@ -266,6 +266,7 @@ build() {
     --libexecdir=${_install_prefix}/lib \
     --disable-bootstrap \
     --enable-checking=release \
+    --disable-build-format-warnings \
     --with-arch=${_arch} \
     --with-tune=generic \
     --enable-languages=${_languages} \
