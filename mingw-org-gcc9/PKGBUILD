@@ -290,8 +290,8 @@ build() {
     --with-libiconv \
     --with-system-zlib \
     --with-{gmp,mpfr,mpc,isl}=${_install_prefix} \
-    --with-pkgversion="Rev${pkgrel}, Built by MSYS2 project" \
-    --with-bugurl="https://github.com/msys2/MINGW-packages/issues" \
+    --with-pkgversion="Rev${pkgrel}, Built by Tims mingw-org project" \
+    --with-bugurl="https://github.com/stahta01/mingw-org-packages/issues" \
     --with-gnu-as --with-gnu-ld \
     --with-boot-ldflags="${LDFLAGS} -static-libstdc++ -static-libgcc" \
     LDFLAGS_FOR_TARGET="${_LDFLAGS_FOR_TARGET}" \
