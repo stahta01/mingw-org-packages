@@ -7,7 +7,6 @@
 PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
 _target="i686-pc-mingw32"
 _install_prefix="/mingw-org"
-_cross_prefix="/opt"
 
 _realname=mpfr
 pkgbase=mingw-org-${_realname}
@@ -39,7 +38,7 @@ build() {
   [[ -d build-${MINGW_CHOST} ]] && rm -rf build-${MINGW_CHOST}
   mkdir -p build-${MINGW_CHOST} && cd build-${MINGW_CHOST}
 
-  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
   CC="${_target}-gcc" \
