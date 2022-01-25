@@ -6,7 +6,6 @@
 PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
 _target="i686-pc-mingw32"
 _install_prefix="/mingw-org"
-_cross_prefix="/opt"
 
 _realname=gmp
 pkgbase=mingw-org-${_realname}
@@ -18,8 +17,7 @@ arch=('any')
 mingw_arch=('mingw32')
 url="https://gmplib.org/"
 license=('LGPL3' 'GPL')
-#"${MINGW_PACKAGE_PREFIX}-cc"
-makedepends=("${MINGW_PACKAGE_PREFIX}-autotools")
+makedepends=("${MINGW_PACKAGE_PREFIX}-autotools" "${PACKAGE_MINGW_ORG_PREFIX}-cc")
 source=(https://gmplib.org/download/gmp-${pkgver}/${_realname}-${pkgver}.tar.xz{,.sig})
 options=('staticlibs')
 validpgpkeys=('343C2FF0FBEE5EC2EDBEF399F3599FF828C67298') # Niels Möller <nisse@lysator.liu.se>"
@@ -36,7 +34,7 @@ prepare() {
 }
 
 build() {
-  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
   local -a extra_config
