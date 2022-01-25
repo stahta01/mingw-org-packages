@@ -12,7 +12,6 @@ PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
 _build_system="i686-pc-mingw32"
 _target="i686-pc-mingw32"
 _install_prefix="/mingw-org"
-_cross_prefix="/opt"
 _boot_prefix="/c/MinGW.org"
 
 _enable_ada=no
@@ -39,9 +38,9 @@ mingw_arch=('mingw32')
 url="https://gcc.gnu.org"
 license=('GPL' 'LGPL' 'FDL' 'custom')
 groups=("${PACKAGE_MINGW_ORG_PREFIX}-toolchain")
-makedepends=( #"${PACKAGE_MINGW_ORG_PREFIX}-${_realname}"
-             $([[ "$_enable_ada" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-ada")
-             #"${PACKAGE_MINGW_ORG_PREFIX}-binutils"
+makedepends=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}"
+             #$([[ "$_enable_ada" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-ada")
+             "${PACKAGE_MINGW_ORG_PREFIX}-binutils"
              "${PACKAGE_MINGW_ORG_PREFIX}-wsl"
              "${PACKAGE_MINGW_ORG_PREFIX}-gmp"
              "${PACKAGE_MINGW_ORG_PREFIX}-isl"
@@ -205,7 +204,7 @@ build() {
   [[ -d ${srcdir}/build-${MINGW_CHOST} ]] && rm -rf ${srcdir}/build-${MINGW_CHOST}
   mkdir -p ${srcdir}/build-${MINGW_CHOST} && cd ${srcdir}/build-${MINGW_CHOST}
 
-  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
   declare -a extra_config
@@ -353,7 +352,7 @@ ENDFILE
 
 package_gcc() {
   pkgdesc="GNU Compiler Collection (C,C++,OpenMP) for mingw-org"
-  depends=( #"${PACKAGE_MINGW_ORG_PREFIX}-binutils"
+  depends=("${PACKAGE_MINGW_ORG_PREFIX}-binutils"
            "${PACKAGE_MINGW_ORG_PREFIX}-isl"
            "${PACKAGE_MINGW_ORG_PREFIX}-libiconv"
            "${PACKAGE_MINGW_ORG_PREFIX}-mpc"
@@ -364,7 +363,8 @@ package_gcc() {
            )
   provides=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-base"
             "${PACKAGE_MINGW_ORG_PREFIX}-cc")
-  conflicts=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-base")
+  conflicts=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-base"
+            "${PACKAGE_MINGW_ORG_PREFIX}-cc")
 
   mkdir -p ${pkgdir}${_install_prefix}/{bin,include,lib,share}
 
