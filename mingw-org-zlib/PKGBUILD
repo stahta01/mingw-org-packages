@@ -9,7 +9,6 @@
 PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
 _target="i686-pc-mingw32"
 _install_prefix="/mingw-org"
-_cross_prefix="/opt"
 
 _external_minizip=yes
 _realname=zlib
@@ -23,8 +22,7 @@ mingw_arch=('mingw32')
 license=(ZLIB)
 url="https://www.zlib.net/"
 depends=($([[ "$_external_minizip" != "yes" ]] && echo "${MINGW_PACKAGE_PREFIX}-bzip2"))
-# "${MINGW_PACKAGE_PREFIX}-cc" 
-makedepends=("${MINGW_PACKAGE_PREFIX}-autotools")
+makedepends=("${MINGW_PACKAGE_PREFIX}-autotools" "${PACKAGE_MINGW_ORG_PREFIX}-cc" )
 options=('staticlibs')
 source=("https://zlib.net/current/${_realname}-${pkgver}.tar.gz"
         01-zlib-1.2.11-1-buildsys.mingw.patch
@@ -59,7 +57,7 @@ prepare() {
 build() {
   cd ${srcdir}/${_realname}-${pkgver}
 
-  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
   CC="${_target}-gcc" \
