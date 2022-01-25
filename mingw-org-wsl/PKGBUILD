@@ -5,7 +5,6 @@
 PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
 _target="i686-pc-mingw32"
 _install_prefix="/mingw-org"
-_cross_prefix="/opt"
 
 _realname=wsl
 _sourcedir=${_realname}-git
@@ -18,7 +17,7 @@ arch=('any')
 mingw_arch=('mingw32')
 url='https://mingw.osdn.io/'
 license=('LICENSE')
-makedepends=('git' "${MINGW_PACKAGE_PREFIX}-autotools")
+makedepends=('git' "${MINGW_PACKAGE_PREFIX}-autotools" "${PACKAGE_MINGW_ORG_PREFIX}-cc")
 _commit='0c111acc00bc15f5270535a71ee1601a3ed4a168'
 source=("${_sourcedir}"::"git://git.osdn.net/gitroot/mingw/mingw-org-wsl.git#commit=${_commit}"
         'features.h')
@@ -48,11 +47,10 @@ build() {
 #  CFLAGS='-pipe'
 #  CXXFLAGS='-pipe'
 
-  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
   msg "Configuring w32api"
-  CFLAGS+=" -I${_cross_prefix}/${_target}/include" \
   CC="${_target}-gcc" \
   ../${_sourcedir}/w32api/configure \
     --prefix="${_install_prefix}" \
