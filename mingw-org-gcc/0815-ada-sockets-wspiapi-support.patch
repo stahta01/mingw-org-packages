@@ -1,0 +1,17 @@
+diff --git a/gcc/ada/gsocket.h b/gcc/ada/gsocket.h
+--- a/gcc/ada/gsocket.h
++++ b/gcc/ada/gsocket.h
+@@ -79,10 +79,13 @@
+ #elif defined (WINNT)
+ #define FD_SETSIZE 1024
+ 
+ #ifdef __MINGW32__
+ #include <winsock2.h>
++#if _WIN32_WINNT < _WIN32_WINNT_WINXP
++#include <wspiapi.h>
++#endif
+ #include <ws2tcpip.h>
+ 
+ #undef  EACCES
+ #define EACCES          WSAEACCES
+ #undef  EADDRINUSE
