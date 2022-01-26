@@ -1,0 +1,52 @@
+# HG changeset patch
+# Parent  c874ad43832681bb295f772a958bc6bb2973e0af
+
+diff --git a/gcc/config/i386/mingw32.h b/gcc/config/i386/mingw32.h
+--- a/gcc/config/i386/mingw32.h
++++ b/gcc/config/i386/mingw32.h
+@@ -145,29 +145,30 @@ along with GCC; see the file COPYING3.  
+   " LINK_SPEC_LARGE_ADDR_AWARE "\
+   %(shared_libgcc_undefs)"
+ 
+ /* Include in the mingw32 libraries with libgcc */
+ #ifdef ENABLE_SHARED_LIBGCC
+-#define SHARED_LIBGCC_SPEC " \
+- %{static|static-libgcc:-lgcc -lgcc_eh} \
+- %{!static: \
+-   %{!static-libgcc: \
+-     %{!shared: \
+-       %{!shared-libgcc:-lgcc -lgcc_eh} \
+-       %{shared-libgcc:-lgcc_s -lgcc} \
+-      } \
+-     %{shared:-lgcc_s -lgcc} \
+-    } \
+-  } "
++#define SHARED_LIBGCC_SPEC " "			\
++ "%{static|static-libgcc:-lgcc -lgcc_eh} "	\
++ "%{!static:"					\
++   "%{!static-libgcc:"				\
++     "%{!shared:"				\
++       "%{!shared-libgcc:-lgcc -lgcc_eh} "	\
++       "%{shared-libgcc:-lgcc_s -lgcc}" 	\
++      "} "					\
++     "%{shared:-lgcc_s -lgcc}"			\
++    "}" 					\
++   "} "
+ #else
+ #define SHARED_LIBGCC_SPEC " -lgcc "
+ #endif
+ #undef REAL_LIBGCC_SPEC
+-#define REAL_LIBGCC_SPEC \
+-  "%{mthreads:-lmingwthrd} -lmingw32 \
+-   " SHARED_LIBGCC_SPEC " \
+-   -lmoldname -lmingwex -lmsvcrt"
++#define REAL_LIBGCC_SPEC			\
++ "%{mthreads:-lmingwthrd} "			\
++ "-lmingw32 -lmingwex -lmingw32 -lmingwex"	\
++    SHARED_LIBGCC_SPEC				\
++ "-lmoldname -lmsvcrt"
+ 
+ #undef STARTFILE_SPEC
+ #define STARTFILE_SPEC "%{shared|mdll:dllcrt2%O%s} \
+   %{!shared:%{!mdll:crt2%O%s}} %{pg:gcrt2%O%s} \
+   crtbegin.o%s \
