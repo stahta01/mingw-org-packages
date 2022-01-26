@@ -19,5 +19,5 @@ cd ../mingw-org-binutils && \
 cp mingw-org-i686*.pkg.tar.zst ../packages/32bit/ && \
 cd ../mingw-org-libltdl && \
 cp mingw-org-i686*.pkg.tar.zst ../packages/32bit/ && \
-cd ../mingw-org-gcc9 && \
+cd ../mingw-org-gcc && \
 cp mingw-org-i686*.pkg.tar.zst ../packages/32bit/
