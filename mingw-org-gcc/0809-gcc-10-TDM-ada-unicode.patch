@@ -1,5 +1,22 @@
+Fix the include and define order in ada headers to allow Unicode TCHAR detection to work under MinGW.org
+
+From: J.M. Eubank <john@thesnappy.net>
+
+# HG changeset patch
+# Parent 7378b8981814e09c9089cc2749381608152dc269
+# Parent  cac722b5dc5792119c1f393a316b074fcc3fefbf
+---
+ gcc/ada/adafcntl.h |   57 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ gcc/ada/adaint.c   |   10 +++++++--
+ gcc/ada/mingw32.h  |   14 +++++++++++--
+ gcc/ada/rtinit.c   |   11 ++++++++--
+ gcc/ada/sysdep.c   |    2 +-
+ 5 files changed, 87 insertions(+), 7 deletions(-)
+ create mode 100644 gcc/ada/adafcntl.h
+
 diff --git a/gcc/ada/adafcntl.h b/gcc/ada/adafcntl.h
 new file mode 100644
+index 000000000..48b86e3c8
 --- /dev/null
 +++ b/gcc/ada/adafcntl.h
 @@ -0,0 +1,57 @@
@@ -61,11 +78,10 @@ new file mode 100644
 +#endif	/* __MINGW32__ */
 +#endif	/* !__ADAFCNTL_H_ */
 diff --git a/gcc/ada/adaint.c b/gcc/ada/adaint.c
+index 292215d16..3397351b0 100644
 --- a/gcc/ada/adaint.c
 +++ b/gcc/ada/adaint.c
-@@ -42,10 +42,18 @@
- #ifndef _LARGEFILE_SOURCE
- #define _LARGEFILE_SOURCE
+@@ -52,6 +52,14 @@
  #endif
  #define _FILE_OFFSET_BITS 64
  
@@ -80,11 +96,7 @@ diff --git a/gcc/ada/adaint.c b/gcc/ada/adaint.c
  #ifdef __vxworks
  
  /* No need to redefine exit here.  */
- #undef exit
- 
-@@ -123,12 +131,10 @@ extern "C" {
- #define ISALPHA isalpha
- #endif
+@@ -161,8 +169,6 @@ extern "C" {
  
  #elif defined (__MINGW32__) || defined (__CYGWIN__)
  
@@ -93,14 +105,11 @@ diff --git a/gcc/ada/adaint.c b/gcc/ada/adaint.c
  /* Current code page and CCS encoding to use, set in initialize.c.  */
  UINT __gnat_current_codepage;
  UINT __gnat_current_ccs_encoding;
- 
- #include <sys/utime.h>
 diff --git a/gcc/ada/mingw32.h b/gcc/ada/mingw32.h
+index 3dbf7974a..466cbf5ee 100644
 --- a/gcc/ada/mingw32.h
 +++ b/gcc/ada/mingw32.h
-@@ -34,12 +34,10 @@
-     set. This files contains also the circuitry for the unicode support.   */
- 
+@@ -36,8 +36,6 @@
  #ifndef _MINGW32_H
  #define _MINGW32_H
  
@@ -109,36 +118,42 @@ diff --git a/gcc/ada/mingw32.h b/gcc/ada/mingw32.h
  #ifndef RTX
  #define GNAT_UNICODE_SUPPORT
  #define _UNICODE /* For C runtime */
- #define UNICODE  /* For Win32 API */
+@@ -49,6 +47,10 @@
+ #define _WIN32_WINNT 0x0501
  #endif
-@@ -57,10 +55,12 @@
-    That fails to compile, if malloc is poisoned, i.e. if !IN_RTS.  */
- #define _X86INTRIN_H_INCLUDED
+ 
++#ifdef _WIN64
++#  include <_mingw.h>
++#endif
++
+ #ifndef __CYGWIN__
+ #include <tchar.h>
+ #endif
+@@ -60,6 +62,10 @@
  #endif
  #include <windows.h>
  
-+_BEGIN_C_DECLS
++#ifdef __cplusplus
++extern "C" {
++#endif
 +
  /* After including this file it is possible to use the character t as prefix
     to routines. If GNAT_UNICODE_SUPPORT is defined then the unicode enabled
     versions will be used.  */
- 
- /* Copy to/from wide-string, if GNAT_UNICODE_SUPPORT activated this will do
-@@ -119,6 +119,8 @@ extern UINT __gnat_current_ccs_encoding;
- 
- #ifndef MAXPATHLEN
+@@ -122,4 +128,8 @@ extern UINT __gnat_current_ccs_encoding;
  #define MAXPATHLEN MAX_PATH
  #endif
  
-+_END_C_DECLS
++#ifdef __cplusplus
++}
++#endif
 +
  #endif /* _MINGW32_H */
 diff --git a/gcc/ada/rtinit.c b/gcc/ada/rtinit.c
+index 5c9c5ecc8..6b3bf6d0c 100644
 --- a/gcc/ada/rtinit.c
 +++ b/gcc/ada/rtinit.c
-@@ -38,10 +38,18 @@
-    that the __vxworks header appear before any other include.  */
- #ifdef __vxworks
+@@ -40,6 +40,14 @@
  #include "vxWorks.h"
  #endif
  
@@ -151,13 +166,9 @@ diff --git a/gcc/ada/rtinit.c b/gcc/ada/rtinit.c
 +#endif
 +
  #ifdef IN_RTS
- #include "tconfig.h"
- #include "tsystem.h"
  /* We don't have libiberty, so use malloc.  */
  #define xmalloc(S) malloc (S)
-@@ -50,11 +58,11 @@
- #include "config.h"
- #include "system.h"
+@@ -50,7 +58,7 @@
  #endif
  
  #include "raise.h"
@@ -166,11 +177,7 @@ diff --git a/gcc/ada/rtinit.c b/gcc/ada/rtinit.c
  
  #ifdef __cplusplus
  extern "C" {
- #endif
- 
-@@ -70,11 +78,10 @@ int __gnat_wide_text_translation_require
- int __gnat_rt_init_count = 0;
- /* number of references to the GNAT runtime, this is used to initialize
+@@ -70,7 +78,6 @@ int __gnat_rt_init_count = 0;
     and finalize properly the run-time. */
  
  #if defined (__MINGW32__)
@@ -178,21 +185,16 @@ diff --git a/gcc/ada/rtinit.c b/gcc/ada/rtinit.c
  #include <windows.h>
  
  extern void __gnat_init_float (void);
- 
- extern int gnat_argc;
 diff --git a/gcc/ada/sysdep.c b/gcc/ada/sysdep.c
+index 1e1f5eeb5..cd0304c32 100644
 --- a/gcc/ada/sysdep.c
 +++ b/gcc/ada/sysdep.c
-@@ -54,11 +54,11 @@
+@@ -58,7 +58,7 @@
+ #include <string.h>
+ #include <unistd.h>
  
- #ifdef IN_RTS
- #define POSIX
- #include "tconfig.h"
- #include "tsystem.h"
 -#include <fcntl.h>
 +#include "adafcntl.h"
  #include <sys/stat.h>
  #else
  #include "config.h"
- #include "system.h"
- #endif

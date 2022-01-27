@@ -27,7 +27,7 @@ pkgname=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}"
          $([[ "$_enable_objc" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-objc")
          $([[ "$_enable_jit" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-libgccjit")
         )
-pkgver=9.3.0
+pkgver=10.3.0
 _sourcedir=${_realname}-${pkgver}
 pkgrel=1
 pkgdesc="GCC for the mingw-org"
@@ -62,44 +62,50 @@ source=("https://ftp.gnu.org/gnu/gcc/${_realname}-${pkgver%%+*}/${_realname}-${p
         0012-Handle-spaces-in-path-for-default-manifest.patch
         0014-gcc-9-branch-clone_function_name_1-Retain-any-stdcall-suffix.patch
         0130-libstdc++-in-out.patch
+        0150-gcc-10.2.0-libgcc-ldflags.patch
+        0203-backport-longjmp-fix.patch
+        0204-Change-EH-pointer-encodings-to-PC-relative-on-Window.patch
         0701-libiberty-define-for-headers-that-libiberty-cannot-f.patch
-        0802-mingw32-float.h.patch
+        0802-gcc-10-TDM-mingw32.patch
         0803-ada-largefile.patch
         0807-fortran-libcaf-libtool.patch
         0808-ada-gnattools.patch
-        0809-ada-unicode-misuse.patch
+        0809-gcc-10-TDM-ada-unicode.patch
         0810-mingw-wformat.patch
         0811-libobjc-install-strip.patch
         0814-mingw-ansi-stdio-misuse.patch
-        0815-ada-sockets-wspiapi-support.patch
-        0816-gcc-9.2.0-gratuitous-vista-usage.patch
+        0815-gcc-10-TDM-mingw32-ada-socket.patch
+        0816-gcc-10-TDM-stdcxx-mingw32.patch
         0817-bogus-winsup-references.patch
         0818-mingw32-libgcc-specs.patch
         0819-libgnat-win32-import-libs.patch
         0820-libiberty-mingw-host-shared.patch
         0828-fancy-abort-diagnostic.patch)
-sha256sums=('71e197867611f6054aa1119b13a0c0abac12834765fe2d81f35ac57f84f742d1'
+sha256sums=('64f404c1a650f27fc33da242e1f2df54952e3963a49e06e73f6940f3223ac344'
             'dea2bbad4967280910559c6a11b865aeec19cab34647fb5894cb498b24b14462'
-            '2dd7498bcb25b41afcc458696386b456ee4ff440bf395519a23d1f945ba15a41'
-            '6033acda690786397059536787a6577e1a9f2b39f8a66276821917066094f43c'
+            '1247e81571c908548b4d9aaa3df1ad8fd73aad7b81e7eafea12d53bbada70e94'
+            '5b8ab5a54ebdd10c9802ea431b935ff4ba225eec6ca92824cfddfcf2ee8ac910'
             '388f423a67e4be6f547ca7e340ff8ee4c78b1ed83f3fd698daa409e309911807'
-            '86fc77d5a6c137a9aca65ad6ba56653fb41b05636b763ce2c0b0b14d617c9de4'
-            '0eaee0e1201f4f85ea20756432a9d51531e0e859f6f121276684e2b63b2ee315'
-            '0decbbebda7ceac91da5d3dec9b7330f406a4358fa150560f08ff6f54739035f'
-            'e427297a118c47d2e71cb05dd9a496e9ada497917721c16918548ee2f13ad709'
-            '2321c7dce29a600477e481d16d847f05dc8c6d6461ee1eba7814c5bf62c2ef95'
-            'a526cfab91a1499be92c824c7f2185a013a38dbdfbeabe63ecbe84451e07b021'
+            'bd1c201febdf292570b0da9dcc066a237916ab3166dce3610487814f131517e5'
+            '513a824ee500d063f09ec920a9ad317a3a117e5468bf201aaf3f70dd0000e769'
+            'ec58aafba0174313451c282339bbd67ed0b11bca034c29023e0138b61441cf71'
+            '11dd5388a1e1c0a2bc8bc3824726598784b9b9e0896a3d77950ba6a4569f1128'
+            '21e31addcf13bc6fa6650b02ed0f2e195a1226260ae48c536840cc9230de2cfc'
+            '90c17d738e168a3cfd1379ea3b54ea9defd1e68aee33cd9966ee7562485f4910'
+            '7f0b4e45d933e18c9d8bd2afcd83e4f52e97e2e25dd41bfa0cba755c70e591c7'
+            'a1ca2f5dd55823e29f6628dd5027057636cf3d5998c438f365a84f7ec4b7eaa6'
+            '56d748847f4982e9b9681f37016a06c260b193a174c89eda86a0a909b4a964bf'
             '530d50f66f7b36d33b6fa2a07718add7c617a6a28f908a1245a130491d81242d'
-            '740482c1451f1ddd78e8ae72042377e04c8a180a3ce539a0fcc1e0bf948d7649'
+            'b1648e7f6849177d73cf91b04817ab061257bf9ac225d66d5f34cb556931bbc0'
             '6f4f20fddbd309f48f21a753301b3f832cb1ae2bfb970400c64c597bfb895572'
             '3cbbec4ace86dd98d98ac0829bff47384b89d61f61b663c0e42a57997d401e18'
             'bdf6e9f8ff996fc5d0d53d5dc885c2aa295fbc93eb895079cdbd0be0aa16bc29'
-            '4a27c46feef9a7ffb68ead94920019444315be1268ee657d1995085b970fec59'
+            '65692725dcda81b850e0156b88cb94a11c249a5f1c102af118f5fa71eebf1a2d'
             'f7cc0d3e869d9ea9a3a98d2b55ec8b90dd4f6c5b1ded539ab6c41a5e7153c442'
             'eb5dd520174d0218f1f394537ee5523afcf37d1d02921c0ff0b984ed03c5cc2e'
             '26ee2148335edcd2769cc37d88c7468b5a0535adefc20bfdb1a92f23354b2726'
-            '52f94d3460bab309b3bb60b6a430cd9a01208b83ac0b9d532d18e4ca57345b15'
-            'f0d69d375fc7b0f88b974c96832021649885b97b65f249f529bb8e7b9d4e3936'
+            '6acbc2cd17f484f225d506ddb901176167d5679185fcd253a57f4b2cc55f2baa'
+            '0d52dd9ac35bc84c4c30c91c3bf5eb09079398c25ce53d258ba2c99d74ffaabb'
             '4a372f50aebbc5dfe3d2e960c529c84728a423988ae0c3d9c0fb7480c9eb0b11'
             '9b7b34e4c7d4603a526fb6298f61901d8275c620fe81d8b0d0d39561faa59c20'
             '33fb2cc3461ba6b0a53cdbb4846e9bbc97bf332c6f11f069f7d82c92f7f77f7e'
@@ -146,22 +152,25 @@ prepare() {
     0014-gcc-9-branch-clone_function_name_1-Retain-any-stdcall-suffix.patch
 
   apply_patch_with_msg \
-    0130-libstdc++-in-out.patch
+    0130-libstdc++-in-out.patch \
+    0150-gcc-10.2.0-libgcc-ldflags.patch \
+    0203-backport-longjmp-fix.patch \
+    0204-Change-EH-pointer-encodings-to-PC-relative-on-Window.patch
 
   apply_patch_with_msg \
     0701-libiberty-define-for-headers-that-libiberty-cannot-f.patch
 
   apply_patch_with_msg \
-    0802-mingw32-float.h.patch \
+    0802-gcc-10-TDM-mingw32.patch \
     0803-ada-largefile.patch \
     0807-fortran-libcaf-libtool.patch \
     0808-ada-gnattools.patch \
-    0809-ada-unicode-misuse.patch \
+    0809-gcc-10-TDM-ada-unicode.patch \
     0810-mingw-wformat.patch \
     0811-libobjc-install-strip.patch \
     0814-mingw-ansi-stdio-misuse.patch \
-    0815-ada-sockets-wspiapi-support.patch \
-    0816-gcc-9.2.0-gratuitous-vista-usage.patch \
+    0815-gcc-10-TDM-mingw32-ada-socket.patch \
+    0816-gcc-10-TDM-stdcxx-mingw32.patch \
     0817-bogus-winsup-references.patch \
     0818-mingw32-libgcc-specs.patch \
     0819-libgnat-win32-import-libs.patch \
