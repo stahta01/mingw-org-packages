@@ -1,0 +1,72 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Chocobo1
+
+# MINGW_ARCH="mingw32" makepkg-mingw -Lf
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+_cross_prefix="/opt"
+
+_realname=zstd
+pkgbase=mingw-org-${_realname}
+pkgname="${PACKAGE_MINGW_ORG_PREFIX}-${_realname}"
+pkgver=1.5.2
+pkgrel=1
+pkgdesc="Zstandard - Fast real-time compression algorithm (mingw-org)"
+arch=('any')
+mingw_arch=('mingw32')
+url='https://facebook.github.io/zstd/'
+license=('BSD')
+options=('!strip')
+makedepends=( #"${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-cmake")
+source=("https://github.com/facebook/zstd/releases/download/v${pkgver}/${_realname}-${pkgver}.tar.gz"
+        zstd-1.4.0-fileio-mingw.patch)
+sha256sums=('7c42d56fac126929a6a85dbc73ff1db2411d04f104fae9bdea51305663a83fd0'
+            '210e57fc4bff62e1af1ca8a3da3960de32a91255ba62b057c6bed5b3a7ebb3d5')
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+  patch -Np1 -i "${srcdir}/zstd-1.4.0-fileio-mingw.patch"
+}
+
+build() {
+  [[ -d "${srcdir}"/build-${CARCH} ]] && rm -rf "${srcdir}"/build-${CARCH}
+  mkdir -p "${srcdir}"/build-${CARCH} && cd "${srcdir}"/build-${CARCH}
+
+  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  echo "PATH := $PATH"
+
+  declare -a extra_config
+  if check_option "debug" "n"; then
+    extra_config+=("-DCMAKE_BUILD_TYPE=Release")
+  else
+    extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
+  fi
+
+  export CC="${_target}-gcc"
+  export CXX="${_target}-g++"
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+    ${MINGW_PREFIX}/bin/cmake \
+      -GNinja \
+      -DCMAKE_INSTALL_PREFIX=${_install_prefix} \
+      "${extra_config[@]}" \
+      -DZSTD_MULTITHREAD_SUPPORT=OFF \
+      -DZSTD_BUILD_CONTRIB=OFF \
+      -DZSTD_BUILD_PROGRAMS=OFF \
+      ../${_realname}-${pkgver}/build/cmake
+
+  ${MINGW_PREFIX}/bin/cmake --build .
+}
+
+
+package() {
+  cd "${srcdir}"/build-${CARCH}
+
+  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake --build . --target install
+
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/LICENSE" "${pkgdir}${_install_prefix}/share/licenses/${_realname}/LICENSE"
+}
