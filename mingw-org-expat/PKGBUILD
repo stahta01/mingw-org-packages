@@ -1,0 +1,60 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
+# Contributor: Renato Silva <br.renatosilva@gmail.com>
+
+# MINGW_ARCH="mingw32" makepkg-mingw -Lf
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+
+_realname=expat
+pkgbase=mingw-w64-${_realname}
+pkgname="${PACKAGE_MINGW_ORG_PREFIX}-${_realname}"
+pkgver=2.4.3
+pkgrel=1
+pkgdesc="An XML parser library (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32')
+url="https://libexpat.github.io/"
+license=('spdx:MIT')
+makedepends=("${PACKAGE_MINGW_ORG_PREFIX}-gcc" "${MINGW_PACKAGE_PREFIX}-autotools")
+options=('strip' 'staticlibs')
+source=("https://github.com/libexpat/libexpat/releases/download/R_${pkgver//./_}/expat-${pkgver}.tar.xz"{,.asc})
+sha256sums=('b1f9f1b1a5ebb0acaa88c9ff79bfa4e145823b78aa5185e5c5d85f060824778a'
+            'SKIP')
+validpgpkeys=('3176EF7DB2367F1FCA4F306B1F9B0E909AF37285') # Sebastian Pipping
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+
+  autoreconf -fiv
+}
+
+build() {
+  [[ -d "${srcdir}/build-${MSYSTEM}" ]] && rm -rf "${srcdir}/build-${MSYSTEM}"
+  mkdir -p "${srcdir}/build-${MSYSTEM}" && cd "${srcdir}/build-${MSYSTEM}"
+
+  export PATH=${_install_prefix}/bin:$PATH
+
+  ../${_realname}-${pkgver}/configure \
+    --prefix=${_install_prefix} \
+    --build=${_target} \
+    --host=${_target} \
+    --target=${_target} \
+    --enable-shared \
+    --enable-static
+
+  make
+}
+
+check() {
+  cd "${srcdir}/build-${MSYSTEM}"
+  make check
+}
+
+package() {
+  cd "${srcdir}/build-${MSYSTEM}"
+  make DESTDIR="${pkgdir}" install
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING" "${pkgdir}${_install_prefix}/share/licenses/${_realname}/COPYING"
+}
