@@ -18,6 +18,7 @@ mingw_arch=('mingw32')
 url='https://mingw.osdn.io/'
 license=('LICENSE')
 makedepends=('git' "${MINGW_PACKAGE_PREFIX}-autotools" "${PACKAGE_MINGW_ORG_PREFIX}-cc")
+options=('!strip')
 _commit='0c111acc00bc15f5270535a71ee1601a3ed4a168'
 source=("${_sourcedir}"::"git://git.osdn.net/gitroot/mingw/mingw-org-wsl.git#commit=${_commit}"
         'features.h')
