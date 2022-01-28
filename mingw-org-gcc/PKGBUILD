@@ -203,18 +203,17 @@ build() {
 
   case "${CARCH}" in
     i686)
-      local _conf="--disable-sjlj-exceptions --with-dwarf2"
-      LDFLAGS+=" -Wl,--large-address-aware"
+      extra_config+=("--disable-sjlj-exceptions --with-dwarf2")
+      extra_config+=("--enable-large-address-aware")
       local _arch=i686
     ;;
 
     x86_64)
       local _arch=x86-64
-      local _conf=""
     ;;
   esac
 
-  local _languages="c,c++"
+  local _languages="c,lto,c++"
   if [ "$_enable_ada" == "yes" ]; then
     _languages+=",ada"
   fi
@@ -258,28 +257,28 @@ build() {
     --enable-graphite \
     --enable-fully-dynamic-string \
     --enable-libstdcxx \
-    --disable-libstdcxx-time \
+    --enable-libstdcxx-time \
     --disable-libstdcxx-pch \
     ${extra_config} \
-    --disable-lto \
+    --enable-lto \
     --disable-libgomp \
     --disable-libvtv \
     --disable-multilib \
     --disable-rpath \
     --disable-win32-registry \
-    --disable-nls \
+    --enable-nls \
     --disable-werror \
     --disable-symvers \
-    --with-libiconv \
     --with-system-zlib \
+    --with-libiconv-prefix=${_install_prefix} \
+    --with-libintl-prefix=${_install_prefix} \
     --with-{gmp,mpfr,mpc,isl}=${_install_prefix} \
     --with-pkgversion="Rev${pkgrel}, Built by Tims mingw-org project" \
     --with-bugurl="https://github.com/stahta01/mingw-org-packages/issues" \
-    --with-gnu-as --with-gnu-ld \
     --with-boot-ldflags="${LDFLAGS} -static-libstdc++ -static-libgcc" \
     LDFLAGS_FOR_TARGET="${_LDFLAGS_FOR_TARGET}" \
     --enable-linker-plugin-flags='LDFLAGS=-static-libstdc++\ -static-libgcc\ '"${_LDFLAGS_FOR_TARGET// /\\ }"'\ -Wl,--stack,12582912' \
-    ${_conf}
+    --with-gnu-as --with-gnu-ld
 
   # While we're debugging -fopenmp problems at least.
   # .. we may as well not strip anything.
@@ -382,7 +381,7 @@ package_gcc() {
   cp lib/gcc/${_target}/${pkgver%%+*}/cc1.exe            ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
   cp lib/gcc/${_target}/${pkgver%%+*}/collect2.exe       ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
   cp lib/gcc/${_target}/${pkgver%%+*}/crt*.o             ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
-#  cp lib/gcc/${_target}/${pkgver%%+*}/liblto*            ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/liblto*            ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
   cp lib/gcc/${_target}/${pkgver%%+*}/libgcov*           ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
   cp lib/gcc/${_target}/${pkgver%%+*}/lto*.exe           ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
   cp lib/gcc/${_target}/${pkgver%%+*}/cc1plus.exe        ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
