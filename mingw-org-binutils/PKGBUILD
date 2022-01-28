@@ -120,15 +120,19 @@ build() {
     --prefix=${_install_prefix} \
     --disable-werror \
     --enable-lto \
+    --enable-gold \
     --with-sysroot=${_install_prefix} \
     --with-libiconv-prefix=${_install_prefix} \
+    --with-libintl-prefix=${_install_prefix} \
     ${_conf} \
-    --disable-nls \
+    --enable-nls \
     --disable-rpath \
     --disable-multilib \
+    --enable-install-libbfd \
     --enable-install-libiberty \
     --enable-plugins \
-    --disable-shared \
+    --enable-libssp \
+    --enable-shared --enable-static \
     --enable-deterministic-archives
 
   make
@@ -153,7 +157,7 @@ package() {
   mv ${pkgdir}${_install_prefix}/lib/*.a ${pkgdir}${_install_prefix}/lib/${_realname}
 
   # https://github.com/msys2/MINGW-packages/issues/7890
-  rm "${pkgdir}${_install_prefix}/lib/bfd-plugins/libdep.a"
+#  rm "${pkgdir}${_install_prefix}/lib/bfd-plugins/libdep.a"
 
   find ${pkgdir}${_install_prefix}/share -type f -iname "opcodes.mo" -o -iname "bfd.mo" | xargs -rtl1 rm
 
