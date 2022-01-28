@@ -26,7 +26,7 @@ depends=("${PACKAGE_MINGW_ORG_PREFIX}-expat"
          "${PACKAGE_MINGW_ORG_PREFIX}-gcc-libs"
          "${PACKAGE_MINGW_ORG_PREFIX}-libiconv"
         )
-makedepends=("${MINGW_PACKAGE_PREFIX}-ncurses"
+makedepends=( #"${MINGW_PACKAGE_PREFIX}-ncurses"
              "${MINGW_PACKAGE_PREFIX}-autotools"
              "${PACKAGE_MINGW_ORG_PREFIX}-gcc")
 options=('strip' 'staticlibs')
