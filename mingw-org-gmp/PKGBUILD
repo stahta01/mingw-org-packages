@@ -48,6 +48,7 @@ build() {
   esac
   # Build static version
   mkdir -p "${srcdir}/static-${MINGW_CHOST}" && cd "${srcdir}/static-${MINGW_CHOST}"
+  msg "Configuring static ${_realname}"
   CC="${_target}-gcc" \
   CXX="${_target}-g++" \
   ../${_realname}-${pkgver}/configure \
@@ -61,6 +62,7 @@ build() {
 
   # Build shared version
   mkdir -p "${srcdir}/shared-${MINGW_CHOST}" && cd "${srcdir}/shared-${MINGW_CHOST}"
+  msg "Configuring shared ${_realname}"
   CC="${_target}-gcc" \
   CXX="${_target}-g++" \
   ../${_realname}-${pkgver}/configure --build=${_target} \
