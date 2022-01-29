@@ -18,6 +18,7 @@ arch=('any')
 mingw_arch=('mingw32')
 license=('BSD')
 makedepends=('git' "${MINGW_PACKAGE_PREFIX}-autotools" "${PACKAGE_MINGW_ORG_PREFIX}-cc")
+options=('!strip')
 _GIT_TAG="release-6_4"
 source=("git+https://sourceware.org/git/cygwin-apps/${_realname}.git#tag=${_GIT_TAG}")
 sha256sums=('SKIP')
