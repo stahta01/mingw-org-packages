@@ -195,6 +195,10 @@ build() {
   export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
+  # Remove "-D__USE_MINGW_ANSI_STDIO=1" from CPPFLAGS
+  CPPFLAGS=${CPPFLAGS/-D__USE_MINGW_ANSI_STDIO=1}
+  echo "CPPFLAGS := $CPPFLAGS"
+
   declare -a extra_config
   if check_option "debug" "n"; then
     extra_config+=("--disable-libstdcxx-debug")
@@ -233,8 +237,6 @@ build() {
 
   local _LDFLAGS_FOR_TARGET="$LDFLAGS"
   LDFLAGS+=" -Wl,--disable-dynamicbase"
-
-  export CPPFLAGS=""
 
   CFLAGS+=" -I${_install_prefix}/include" \
   CC="${_target}-gcc" \
