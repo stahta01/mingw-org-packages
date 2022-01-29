@@ -113,8 +113,9 @@ build() {
   export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
-#  /opt/i686-pc-mingw32/include/
-#  /mingw-org/include/
+  # Remove "-D__USE_MINGW_ANSI_STDIO=1" from CPPFLAGS
+  CPPFLAGS=${CPPFLAGS/-D__USE_MINGW_ANSI_STDIO=1}
+  echo "CPPFLAGS := $CPPFLAGS"
 
   CC="${_target}-gcc" \
   ../${_realname}-${pkgver}/configure \
