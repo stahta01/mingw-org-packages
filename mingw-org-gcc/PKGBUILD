@@ -43,11 +43,12 @@ makedepends=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}"
              "${PACKAGE_MINGW_ORG_PREFIX}-gmp"
              "${PACKAGE_MINGW_ORG_PREFIX}-isl"
              "${PACKAGE_MINGW_ORG_PREFIX}-libiconv"
+             "${PACKAGE_MINGW_ORG_PREFIX}-libintl"
              "${PACKAGE_MINGW_ORG_PREFIX}-mpc"
              "${PACKAGE_MINGW_ORG_PREFIX}-mpfr"
              "${PACKAGE_MINGW_ORG_PREFIX}-windows-default-manifest"
              "${PACKAGE_MINGW_ORG_PREFIX}-zlib"
-#             "${MINGW_PACKAGE_PREFIX}-zstd"
+             "${PACKAGE_MINGW_ORG_PREFIX}-zstd"
              "${MINGW_PACKAGE_PREFIX}-autotools")
 options=('staticlibs' '!emptydirs' '!strip') # '!strip' 'debug')
 source=("https://ftp.gnu.org/gnu/gcc/${_realname}-${pkgver%%+*}/${_realname}-${pkgver}.tar.xz"
@@ -299,9 +300,9 @@ build() {
 
 package_gcc-libs() {
   pkgdesc="GNU Compiler Collection (libraries) for mingw-org"
-  depends=("${PACKAGE_MINGW_ORG_PREFIX}-gmp"
-           "${PACKAGE_MINGW_ORG_PREFIX}-mpc"
-           "${PACKAGE_MINGW_ORG_PREFIX}-mpfr")
+  depends=() # "${PACKAGE_MINGW_ORG_PREFIX}-gmp"
+#           "${PACKAGE_MINGW_ORG_PREFIX}-mpc"
+#           "${PACKAGE_MINGW_ORG_PREFIX}-mpfr")
   provides=("${PACKAGE_MINGW_ORG_PREFIX}-libssp")
 
   # Licensing information
@@ -337,13 +338,14 @@ ENDFILE
 package_gcc() {
   pkgdesc="GNU Compiler Collection (C,C++,OpenMP) for mingw-org"
   depends=("${PACKAGE_MINGW_ORG_PREFIX}-binutils"
-           "${PACKAGE_MINGW_ORG_PREFIX}-isl"
-           "${PACKAGE_MINGW_ORG_PREFIX}-libiconv"
-           "${PACKAGE_MINGW_ORG_PREFIX}-mpc"
+           "${PACKAGE_MINGW_ORG_PREFIX}-wsl"
+#           "${PACKAGE_MINGW_ORG_PREFIX}-isl"
+#           "${PACKAGE_MINGW_ORG_PREFIX}-libiconv"
+#           "${PACKAGE_MINGW_ORG_PREFIX}-mpc"
            "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}"
            "${PACKAGE_MINGW_ORG_PREFIX}-windows-default-manifest"
            "${PACKAGE_MINGW_ORG_PREFIX}-zlib"
-#           "${MINGW_PACKAGE_PREFIX}-zstd"
+           "${PACKAGE_MINGW_ORG_PREFIX}-zstd"
            )
   provides=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-base"
             "${PACKAGE_MINGW_ORG_PREFIX}-cc")
