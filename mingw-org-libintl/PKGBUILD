@@ -28,7 +28,7 @@ depends=("${PACKAGE_MINGW_ORG_PREFIX}-expat"
         )
 makedepends=( #"${MINGW_PACKAGE_PREFIX}-ncurses"
              "${MINGW_PACKAGE_PREFIX}-autotools"
-             "${PACKAGE_MINGW_ORG_PREFIX}-gcc")
+             "${PACKAGE_MINGW_ORG_PREFIX}-cc")
 options=('strip' 'staticlibs')
 source=("https://ftp.gnu.org/pub/gnu/gettext/${_supername}-${pkgver}.tar.gz"
 	0001-printf.c-guard-the-wprintf-functions-by-the-correct-.patch
