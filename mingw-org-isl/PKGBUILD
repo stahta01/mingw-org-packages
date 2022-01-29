@@ -38,6 +38,10 @@ build() {
   export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
+  # Remove "-D__USE_MINGW_ANSI_STDIO=1" from CPPFLAGS
+  CPPFLAGS=${CPPFLAGS/-D__USE_MINGW_ANSI_STDIO=1}
+  echo "CPPFLAGS := $CPPFLAGS"
+
   CC="${_target}-gcc" \
   CXX="${_target}-g++" \
   ../${_realname}-${pkgver}/configure \
