@@ -6,7 +6,6 @@
 PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
 _target="i686-pc-mingw32"
 _install_prefix="/mingw-org"
-_cross_prefix="/opt"
 
 _realname=zstd
 pkgbase=mingw-org-${_realname}
@@ -19,7 +18,7 @@ mingw_arch=('mingw32')
 url='https://facebook.github.io/zstd/'
 license=('BSD')
 options=('!strip')
-makedepends=( #"${MINGW_PACKAGE_PREFIX}-cc"
+makedepends=("${PACKAGE_MINGW_ORG_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-ninja"
              "${MINGW_PACKAGE_PREFIX}-cmake")
 source=("https://github.com/facebook/zstd/releases/download/v${pkgver}/${_realname}-${pkgver}.tar.gz"
@@ -36,7 +35,7 @@ build() {
   [[ -d "${srcdir}"/build-${CARCH} ]] && rm -rf "${srcdir}"/build-${CARCH}
   mkdir -p "${srcdir}"/build-${CARCH} && cd "${srcdir}"/build-${CARCH}
 
-  export PATH=${_install_prefix}/bin:${_cross_prefix}/bin:$PATH
+  export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
   declare -a extra_config
