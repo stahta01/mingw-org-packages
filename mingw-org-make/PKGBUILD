@@ -27,7 +27,7 @@ url="https://www.gnu.org/software/make"
 license=('GPL3')
 groups=("${PACKAGE_MINGW_ORG_PREFIX}-toolchain")
 depends=("${PACKAGE_MINGW_ORG_PREFIX}-libintl")
-makedepends=('dos2unix' 'wget' "${MINGW_PACKAGE_PREFIX}-autotools" "${PACKAGE_MINGW_ORG_PREFIX}-gcc")
+makedepends=('dos2unix' 'wget' "${MINGW_PACKAGE_PREFIX}-autotools" "${PACKAGE_MINGW_ORG_PREFIX}-cc")
 source=("https://ftp.gnu.org/gnu/${_realname}/${_realname}-${pkgver}.tar.gz"
         'make-getopt.patch'
         'make-linebuf-mingw.patch'
