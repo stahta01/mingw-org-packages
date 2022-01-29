@@ -18,7 +18,7 @@ license=('LGPL')
 arch=('any')
 mingw_arch=('mingw32')
 depends=("${PACKAGE_MINGW_ORG_PREFIX}-mpfr")
-makedepends=("${PACKAGE_MINGW_ORG_PREFIX}-gmp" "${PACKAGE_MINGW_ORG_PREFIX}-mpfr" "${MINGW_PACKAGE_PREFIX}-autotools")
+makedepends=("${PACKAGE_MINGW_ORG_PREFIX}-gmp" "${PACKAGE_MINGW_ORG_PREFIX}-mpfr" "${MINGW_PACKAGE_PREFIX}-autotools" "${PACKAGE_MINGW_ORG_PREFIX}-cc")
 options=('staticlibs' '!emptydirs')
 source=(#"http://www.multiprecision.org/mpc/download/${_realname}-${pkgver}.tar.gz"
         https://ftp.gnu.org/gnu/mpc/${_realname}-${pkgver}.tar.gz{,.sig})
