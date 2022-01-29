@@ -44,12 +44,12 @@ build() {
   cd "${srcdir}/${_sourcedir}/w32api"
   mkdir -p "${srcdir}/build-w32api-${CHOST}" && cd "${srcdir}/build-w32api-${CHOST}"
 
-#  # MSys2 default flags are wrong for this package
-#  CFLAGS='-pipe'
-#  CXXFLAGS='-pipe'
-
   export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
+
+  # Remove "-D__USE_MINGW_ANSI_STDIO=1" from CPPFLAGS
+  CPPFLAGS=${CPPFLAGS/-D__USE_MINGW_ANSI_STDIO=1}
+  echo "CPPFLAGS := $CPPFLAGS"
 
   msg "Configuring w32api"
   CC="${_target}-gcc" \
