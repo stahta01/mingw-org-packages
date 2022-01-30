@@ -208,7 +208,8 @@ build() {
 
   case "${CARCH}" in
     i686)
-      extra_config+=("--disable-sjlj-exceptions --with-dwarf2")
+#      extra_config+=("--disable-sjlj-exceptions --with-dwarf2")
+      extra_config+=("--enable-sjlj-exceptions")
       extra_config+=("--enable-large-address-aware")
       local _arch=i686
     ;;
