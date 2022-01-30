@@ -1,0 +1,9 @@
+Design decisions that TDM made that I considerer wrong for my project.
+The libraries libstdc and libstdcxx being static by default.
+The pthread library being static.
+
+Design decisions that TDM made that I considerer correct for my project.
+The use of SJLJ exceptions.
+The use of the pthread library.
+
+So, the plan is to change to SJLJ exceptions now and maybe change to PThread at some future time.
