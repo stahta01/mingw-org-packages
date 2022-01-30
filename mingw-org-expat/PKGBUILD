@@ -36,6 +36,11 @@ build() {
   mkdir -p "${srcdir}/build-${MSYSTEM}" && cd "${srcdir}/build-${MSYSTEM}"
 
   export PATH=${_install_prefix}/bin:$PATH
+  echo "PATH := $PATH"
+
+  # Remove "-D__USE_MINGW_ANSI_STDIO=1" from CPPFLAGS
+  CPPFLAGS=${CPPFLAGS/-D__USE_MINGW_ANSI_STDIO=1}
+  echo "CPPFLAGS := $CPPFLAGS"
 
   ../${_realname}-${pkgver}/configure \
     --prefix=${_install_prefix} \
