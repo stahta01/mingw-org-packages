@@ -100,10 +100,6 @@ build() {
   export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
-  # Remove "-D__USE_MINGW_ANSI_STDIO=1" from CPPFLAGS
-  CPPFLAGS=${CPPFLAGS/-D__USE_MINGW_ANSI_STDIO=1}
-  echo "CPPFLAGS := $CPPFLAGS"
-
   if test "${_autotools}" = "yes"; then
     mkdir -vp build-${MINGW_CHOST}
     cd build-${MINGW_CHOST}
