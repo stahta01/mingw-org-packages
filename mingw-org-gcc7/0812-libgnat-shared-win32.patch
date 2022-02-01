@@ -1,0 +1,53 @@
+# HG changeset patch
+# Parent 91e0ce65932317d154af7334650babdc7200afe1
+
+diff --git a/gcc/ada/gcc-interface/Makefile.in b/gcc/ada/gcc-interface/Makefile.in
+--- a/gcc/ada/gcc-interface/Makefile.in
++++ b/gcc/ada/gcc-interface/Makefile.in
+@@ -1811,22 +1811,22 @@ ifeq ($(strip $(filter-out cygwin% mingw
+   s-taprop.adb<s-taprop-mingw.adb
+ 
+   ifeq ($(strip $(filter-out x86_64%,$(target_cpu))),)
+     ifeq ($(strip $(MULTISUBDIR)),/32)
+       LIBGNAT_TARGET_PAIRS += $(X86_TARGET_PAIRS)
+-      SO_OPTS= -m32 -Wl,-soname,
++      SO_OPTS= -m32 -Wl,-out-implib,
+     else
+       LIBGNAT_TARGET_PAIRS += $(X86_64_TARGET_PAIRS)
+-      SO_OPTS = -m64 -Wl,-soname,
++      SO_OPTS = -m64 -Wl,-out-implib,
+     endif
+   else
+     ifeq ($(strip $(MULTISUBDIR)),/64)
+       LIBGNAT_TARGET_PAIRS += $(X86_64_TARGET_PAIRS)
+-      SO_OPTS = -m64 -Wl,-soname,
++      SO_OPTS = -m64 -Wl,-out-implib,
+     else
+       LIBGNAT_TARGET_PAIRS += $(X86_TARGET_PAIRS)
+-      SO_OPTS = -m32 -Wl,-soname,
++      SO_OPTS = -m32 -Wl,-out-implib,
+     endif
+   endif
+ 
+   EXTRA_GNATRTL_NONTASKING_OBJS += \
+     s-win32.o s-winext.o g-regist.o g-sse.o g-ssvety.o
+@@ -2919,17 +2919,17 @@ gnatlib-shared-win32:
+ 	cd $(RTSDIR); `echo "$(GCC_FOR_TARGET)" \
+                 | sed -e 's,\./xgcc,../../xgcc,' -e 's,-B\./,-B../../,'` -shared -shared-libgcc \
+ 		$(PICFLAG_FOR_TARGET) \
+ 		-o libgnat$(hyphen)$(LIBRARY_VERSION)$(soext) \
+ 		$(GNATRTL_NONTASKING_OBJS) $(LIBGNAT_OBJS) \
+-		$(SO_OPTS)libgnat$(hyphen)$(LIBRARY_VERSION)$(soext) $(MISCLIB)
++		$(SO_OPTS)libgnat$(soext)$(arext) $(MISCLIB)
+ 	cd $(RTSDIR); `echo "$(GCC_FOR_TARGET)" \
+                 | sed -e 's,\./xgcc,../../xgcc,' -e 's,-B\./,-B../../,'` -shared -shared-libgcc \
+ 		$(PICFLAG_FOR_TARGET) \
+ 		-o libgnarl$(hyphen)$(LIBRARY_VERSION)$(soext) \
+ 		$(GNATRTL_TASKING_OBJS) \
+-		$(SO_OPTS)libgnarl$(hyphen)$(LIBRARY_VERSION)$(soext) \
++		$(SO_OPTS)libgnarl$(soext)$(arext) \
+ 		$(THREADSLIB) -Wl,libgnat$(hyphen)$(LIBRARY_VERSION)$(soext)
+ 
+ gnatlib-shared-darwin:
+ 	$(MAKE) $(FLAGS_TO_PASS) \
+ 	     GNATLIBFLAGS="$(GNATLIBFLAGS)" \
