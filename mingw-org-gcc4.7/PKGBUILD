@@ -1,0 +1,518 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
+# Contributor: Alexey Borzenkov <snaury@gmail.com>
+# Contributor: Ray Donnelly <mingw.android@gmail.com>
+# Contributor: Renato Silva <br.renatosilva@gmail.com>
+# Contributor: wirx6 <wirx654@gmail.com>
+# Contributor: Kirill Müller <krlmlr@mailbox.org>
+
+# MINGW_ARCH="mingw32" makepkg-mingw -Lf
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+
+_enable_ada=no
+_enable_fortran=no
+_enable_objc=no
+_enable_jit=no
+#_threads="win32"
+_realname=gcc
+pkgbase=mingw-org-${_realname}4.7
+pkgname=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}"
+         "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-libs"
+         $([[ "$_enable_fortran" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-libgfortran")
+         $([[ "$_enable_fortran" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-fortran")
+         $([[ "$_enable_ada" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-ada")
+         $([[ "$_enable_objc" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-objc")
+         $([[ "$_enable_jit" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-libgccjit")
+        )
+pkgver=4.7.4
+_sourcedir=${_realname}-${pkgver}
+pkgrel=1
+pkgdesc="GCC for the mingw-org"
+arch=('any')
+mingw_arch=('mingw32')
+url="https://gcc.gnu.org"
+license=('GPL' 'LGPL' 'FDL' 'custom')
+groups=("${PACKAGE_MINGW_ORG_PREFIX}-toolchain")
+makedepends=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}"
+             $([[ "$_enable_ada" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-ada")
+             "${PACKAGE_MINGW_ORG_PREFIX}-binutils"
+             "${PACKAGE_MINGW_ORG_PREFIX}-wsl"
+             "${PACKAGE_MINGW_ORG_PREFIX}-gmp"
+             "${PACKAGE_MINGW_ORG_PREFIX}-libiconv"
+             "${PACKAGE_MINGW_ORG_PREFIX}-libintl"
+             "${PACKAGE_MINGW_ORG_PREFIX}-mpc"
+             "${PACKAGE_MINGW_ORG_PREFIX}-mpfr"
+             "${PACKAGE_MINGW_ORG_PREFIX}-windows-default-manifest"
+             "${PACKAGE_MINGW_ORG_PREFIX}-zlib"
+             "${PACKAGE_MINGW_ORG_PREFIX}-zstd"
+             "${MINGW_PACKAGE_PREFIX}-autotools")
+options=('staticlibs' '!emptydirs' '!strip') # '!strip' 'debug')
+source=("https://ftp.gnu.org/gnu/gcc/${_realname}-${pkgver%%+*}/${_realname}-${pkgver}.tar.bz2"
+        000-relocatex-libintl-0.18.3.1.mingw.patch
+        001-gcc-4.8-libstdc++export.patch
+        002-gcc-4.7-stdthreads.patch
+        130-dont-escape-arguments-that-dont-need-it-in-pex-win32.c.patch
+        140-fix-for-windows-not-minding-non-existent-parent-dirs.patch
+        150-windows-lrealpath-no-force-lowercase-nor-backslash.patch
+        160-gcc-4.7.2-mingw-dont-ignore-native-system-header-dir.patch
+        180-pr-57440.patch
+        200-gcc-4.8-filename-output.patch
+        210-gcc-4.4-ktietz-libgomp.patch
+        230-build-more-gnattools.mingw.patch
+        240-prettify-linking-no-undefined.mingw.patch
+        310-gcc-make-xmmintrin-header-cplusplus-compatible.patch
+        enable-shared-gnat-implib.mingw.patch
+        701-libiberty-define-for-headers-that-libiberty-cannot-f.patch
+        802-mingw32-float.h.patch
+        806-ssp-wincrypt.patch
+        817-bogus-winsup-references.patch                                       # Not needed
+        901-gcc-4.0-cfns-fix-mismatch-in-gnu_inline-attributes.patch
+        902-handle-use-mingw-ansi-stdio.patch
+        904-gcc-4.6.4-Fix-texi-docs-syntax-errors.patch
+        907-gcc-4.8-lambda-ICE.patch
+        gcc-4.8-iconv.patch)                                                    # Likely not needed
+sha256sums=('92e61c6dc3a0a449e62d72a38185fda550168a86702dea07125ebd3ec3996282'
+            '164e6e90d9306d3da0f15d790a5e44fa87e1db043c4dc0bfaeb8ac1833b9fae0'
+            '21191b4fd57ce5f230fcc97b4d9ae31bdc387d7c7c8e39436aa7e4268d278d3d'
+            '5e0fc1437ce0b357e78d440692e3a30a7905a5f360a67928a95b14ec8d45365b'
+            '800e81e4e6acb07f1b69cccc07a8dae8cdbf7c084ac00c8869e9b4cb205c655c'
+            '74e3a5690f33b71399731a40b1a95fa1ec7275f156a55ee14e7a1eac1711129e'
+            '0953d65d4fb3d681c76b6d6353e3cc424751a417872435f724d463001da66d43'
+            'a7c5daced21086a01b3af9af4c46ee738ccfca6e67b3413771cb7ab81aa2a83f'
+            '16cb29806dd252603d3b42913eba0cb1c59c22d2a3567d88b0d1446b139e531b'
+            '9278e745190bac0b3f6ef74972aecd4e2891d4930f7b6fa8840c3d4f7fbf4f98'
+            'efd0d90eda577db320f1ed704efa5be87c4da09f1c95c3d067e0b563e477e579'
+            'd16e76e0aa9e5a1c239424edc3a6da52785e82849b6e00850f8e2526e7f496d9'
+            'a101c40bd4bda743ee65691959e090a2ee6e01456c394a6f45c21f9a39849d5e'
+            'a253ff798060bf19780bd695b4d96187932a247b2e0c9a9b92b4c92efa55b69f'
+            '6db77e87ca3a7b43c7549b19cfd1364346107502d75d84a4e0c5c590a4cbe4b5'
+            '530d50f66f7b36d33b6fa2a07718add7c617a6a28f908a1245a130491d81242d'
+            '740482c1451f1ddd78e8ae72042377e04c8a180a3ce539a0fcc1e0bf948d7649'
+            'd42a52b5a9146c1a4828f00562a39229755eea1b1fade50f54a908cbf98800dc'
+            '4a372f50aebbc5dfe3d2e960c529c84728a423988ae0c3d9c0fb7480c9eb0b11'
+            'e0442e147448bd725d39bb8ce82b8e939ccc5b33b228388b43138022f1452b4c'
+            '3b9779b05198b4c814709f211623c0b1ebf8937f32eba29826cf15bfc29df9a3'
+            '2cafd273a667f1130e9cd20c87cd5c83cda1100de9958b9dbbf656dcf29fd2bb'
+            'dbbb202cd36aea01f3671997d4e53aad6674de5b774812d6a6460e58997a8117'
+            '9e0401c3e69317a45269fb689e4e89ee8f46997c2c52b11812a11c9faf142ede')
+validpgpkeys=(F3691687D867B81B51CE07D9BBE43771487328A9  # bpiotrowski@archlinux.org
+              86CFFCA918CF3AF47147588051E8B148A9999C34  # evangelos@foutrelis.com
+              13975A70E63C361C73AE69EF6EEB81F8981C74C7  # richard.guenther@gmail.com
+              D3A93CAD751C2AF4F8C7AD516C35B99309B5FA62) # Jakub Jelinek <jakub@redhat.com>
+
+# Helper macros to help make tasks easier #
+apply_patch_with_msg() {
+  for _patch in "$@"
+  do
+    msg2 "Applying ${_patch}"
+    patch -Nbp1 -i "${srcdir}/${_patch}"
+  done
+}
+
+del_file_exists() {
+  for _fname in "$@"
+  do
+    if [ -f ${_fname} ]; then
+      rm -rf ${_fname}
+    fi
+  done
+}
+# =========================================== #
+
+
+prepare() {
+  cd ${srcdir}/${_sourcedir}
+  del_file_exists intl/canonicalize.c intl/canonicalize.h \
+    intl/relocatex.c intl/relocatex.h gcc/ada/adafcntl.h
+
+  # mingw.org needed or created patch files
+  apply_patch_with_msg \
+    802-mingw32-float.h.patch \
+    806-ssp-wincrypt.patch \
+    817-bogus-winsup-references.patch \
+    701-libiberty-define-for-headers-that-libiberty-cannot-f.patch
+
+  apply_patch_with_msg \
+    000-relocatex-libintl-0.18.3.1.mingw.patch \
+    001-gcc-4.8-libstdc++export.patch \
+    002-gcc-4.7-stdthreads.patch \
+    130-dont-escape-arguments-that-dont-need-it-in-pex-win32.c.patch \
+    140-fix-for-windows-not-minding-non-existent-parent-dirs.patch \
+    150-windows-lrealpath-no-force-lowercase-nor-backslash.patch \
+    160-gcc-4.7.2-mingw-dont-ignore-native-system-header-dir.patch \
+    180-pr-57440.patch \
+    210-gcc-4.4-ktietz-libgomp.patch \
+    230-build-more-gnattools.mingw.patch \
+    240-prettify-linking-no-undefined.mingw.patch \
+    310-gcc-make-xmmintrin-header-cplusplus-compatible.patch
+
+  apply_patch_with_msg \
+    enable-shared-gnat-implib.mingw.patch
+
+  apply_patch_with_msg \
+    901-gcc-4.0-cfns-fix-mismatch-in-gnu_inline-attributes.patch \
+    902-handle-use-mingw-ansi-stdio.patch \
+    904-gcc-4.6.4-Fix-texi-docs-syntax-errors.patch \
+    907-gcc-4.8-lambda-ICE.patch \
+    gcc-4.8-iconv.patch
+
+  # do not expect ${prefix}/mingw symlink
+  sed -i 's/${prefix}\/mingw\//${prefix}\//g' configure
+
+  # change hardcoded /mingw prefix to the real prefix
+  local MINGW_NATIVE_PREFIX=$(cygpath -am ${_install_prefix})
+  sed -i "s#\\/mingw\\/#${MINGW_NATIVE_PREFIX//\//\\/}\\/#g" gcc/config/i386/mingw32.h
+}
+
+build() {
+  [[ -d ${srcdir}/build-${MINGW_CHOST} ]] && rm -rf ${srcdir}/build-${MINGW_CHOST}
+  mkdir -p ${srcdir}/build-${MINGW_CHOST} && cd ${srcdir}/build-${MINGW_CHOST}
+
+  export PATH=${_install_prefix}/bin:$PATH
+  echo "PATH := $PATH"
+
+  # Remove "-D__USE_MINGW_ANSI_STDIO=1" from CPPFLAGS
+  CPPFLAGS=${CPPFLAGS/-D__USE_MINGW_ANSI_STDIO=1}
+  echo "CPPFLAGS := $CPPFLAGS"
+
+  declare -a extra_config
+  if check_option "debug" "n"; then
+    extra_config+=("--disable-libstdcxx-debug")
+  else
+    extra_config+=("--enable-libstdcxx-debug")
+  fi
+
+  case "${CARCH}" in
+    i686)
+      extra_config+=("--enable-sjlj-exceptions")
+      extra_config+=("--enable-large-address-aware")
+      local _arch=i686
+    ;;
+
+    x86_64)
+      local _arch=x86-64
+    ;;
+  esac
+
+  local _languages="c,lto,c++"
+  if [ "$_enable_ada" == "yes" ]; then
+    _languages+=",ada"
+  fi
+  if [ "$_enable_fortran" == "yes" ]; then
+    _languages+=",fortran"
+  fi
+  if [ "$_enable_objc" == "yes" ]; then
+    _languages+=",objc,obj-c++"
+  fi
+  if [ "$_enable_jit" == "yes" ]; then
+    _languages+=",jit"
+  fi
+
+  # so libgomp DLL gets built despide static libdl
+  export lt_cv_deplibs_check_method='pass_all'
+
+  local _LDFLAGS_FOR_TARGET="$LDFLAGS"
+  LDFLAGS+=" -Wl,--disable-dynamicbase"
+
+# --enable-threads=${_threads} \
+
+  CFLAGS+=" -I${_install_prefix}/include" \
+  CC="${_target}-gcc" \
+  CXX="${_target}-g++" \
+  CXXCPP="${_target}-g++ -E" \
+  ../${_sourcedir}/configure \
+    --prefix=${_install_prefix} \
+    --with-local-prefix=${_install_prefix}/local \
+    --build=${_target} \
+    --host=${_target} \
+    --libexecdir=${_install_prefix}/lib \
+    --disable-bootstrap \
+    --enable-checking=release \
+    --disable-build-format-warnings \
+    --with-arch=${_arch} \
+    --with-tune=generic \
+    --enable-languages=${_languages} \
+    --enable-shared --enable-static \
+    --disable-libatomic \
+    --disable-threads \
+    --disable-graphite \
+    --enable-fully-dynamic-string \
+    --enable-libstdcxx \
+    --enable-libstdcxx-time \
+    --disable-libstdcxx-pch \
+    ${extra_config} \
+    --enable-lto \
+    --disable-libgomp \
+    --disable-libvtv \
+    --disable-multilib \
+    --disable-rpath \
+    --disable-win32-registry \
+    --enable-nls \
+    --disable-werror \
+    --disable-symvers \
+    --with-system-zlib \
+    --with-libiconv-prefix=${_install_prefix} \
+    --with-libintl-prefix=${_install_prefix} \
+    --with-{gmp,mpfr,mpc}=${_install_prefix} \
+    --with-pkgversion="Rev${pkgrel}, Built by Tims mingw-org project" \
+    --with-bugurl="https://github.com/stahta01/mingw-org-packages/issues" \
+    --with-boot-ldflags="${LDFLAGS} -static-libstdc++ -static-libgcc" \
+    LDFLAGS_FOR_TARGET="${_LDFLAGS_FOR_TARGET}" \
+    --enable-linker-plugin-flags='LDFLAGS=-static-libstdc++\ -static-libgcc\ '"${_LDFLAGS_FOR_TARGET// /\\ }"'\ -Wl,--stack,12582912' \
+    --with-gnu-as --with-gnu-ld
+
+  # While we're debugging -fopenmp problems at least.
+  # .. we may as well not strip anything.
+  if check_option "strip" "n"; then
+    sed -i 's,^STRIP = .*$,STRIP = true,g'                   Makefile
+    sed -i 's,^STRIP_FOR_TARGET=.*$,STRIP_FOR_TARGET=true,g' Makefile
+  fi
+
+  make -j1 V=1 all
+
+  rm -rf ${srcdir}${_install_prefix}
+
+  make -j1 DESTDIR=${srcdir} install
+  if [ "$_enable_ada" == "yes" ]; then
+    mv ${srcdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/adalib/*.dll ${srcdir}${_install_prefix}/bin/
+  fi
+}
+
+package_gcc-libs() {
+  pkgdesc="GNU Compiler Collection (libraries) for mingw-org"
+  depends=() # "${PACKAGE_MINGW_ORG_PREFIX}-gmp"
+#           "${PACKAGE_MINGW_ORG_PREFIX}-mpc"
+#           "${PACKAGE_MINGW_ORG_PREFIX}-mpfr")
+  provides=("${PACKAGE_MINGW_ORG_PREFIX}-libssp")
+
+  # Licensing information
+
+  # Part of the package is GCCRLE, part is LGPL2+, see README generation below.
+  # Since the packaged GCCRLE libraries are also GPL3+, and LGPL2+ is compatible
+  # with GPL3+, the whole package can be redistributed under GPL3+.
+  license=(GPL3+ partial:'GCCRLE' partial:'LGPL2+')
+
+  # We explain the licensing in this generated README file
+  mkdir -p "${pkgdir}${_install_prefix}/share/licenses/${_realname}-libs"
+  cat << ENDFILE > "${pkgdir}${_install_prefix}/share/licenses/${_realname}-libs/README"
+The libgcc, libssp, libstdc++, libgomp and libatomic libraries are covered by
+GPL3+ with the GCC Runtime Library Exception. The libquadmath library is covered
+by LGPL2+. The package as a whole can be redistributed under GPL3+.
+ENDFILE
+
+  # License files
+  install -Dm644 "${srcdir}/${_sourcedir}/COPYING3"        "${pkgdir}${_install_prefix}/share/licenses/${_realname}-libs/COPYING3"
+  install -Dm644 "${srcdir}/${_sourcedir}/COPYING.LIB"     "${pkgdir}${_install_prefix}/share/licenses/${_realname}-libs/COPYING.LIB"
+  install -Dm644 "${srcdir}/${_sourcedir}/COPYING.RUNTIME" "${pkgdir}${_install_prefix}/share/licenses/${_realname}-libs/COPYING.RUNTIME"
+
+  mkdir -p ${pkgdir}${_install_prefix}/bin
+
+  cd ${srcdir}${_install_prefix}
+  # libitm* and libvtv* are disbled until fixed
+  # libatomic*, requires thread
+  cp bin/{libgcc*,libquadmath*,libssp*,libstdc*}.dll ${pkgdir}${_install_prefix}/bin/
+  if [ "$_enable_jit" == "yes" ]; then
+    rm ${pkgdir}${_install_prefix}/bin/libgccjit-0.dll
+  fi
+}
+
+package_gcc() {
+  pkgdesc="GNU Compiler Collection (C,C++,OpenMP) for mingw-org"
+  depends=("${PACKAGE_MINGW_ORG_PREFIX}-binutils"
+           "${PACKAGE_MINGW_ORG_PREFIX}-wsl"
+#           "${PACKAGE_MINGW_ORG_PREFIX}-libiconv"
+#           "${PACKAGE_MINGW_ORG_PREFIX}-mpc"
+           "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}"
+           "${PACKAGE_MINGW_ORG_PREFIX}-windows-default-manifest"
+           "${PACKAGE_MINGW_ORG_PREFIX}-zlib"
+           "${PACKAGE_MINGW_ORG_PREFIX}-zstd"
+           )
+  provides=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-base"
+            "${PACKAGE_MINGW_ORG_PREFIX}-cc")
+  conflicts=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-base"
+            "${PACKAGE_MINGW_ORG_PREFIX}-cc")
+
+  mkdir -p ${pkgdir}${_install_prefix}/{bin,include,lib,share}
+
+  cd ${srcdir}${_install_prefix}
+  cp bin/cpp.exe                                        ${pkgdir}${_install_prefix}/bin/
+  cp bin/gcc.exe                                        ${pkgdir}${_install_prefix}/bin/
+  cp bin/gcc.exe                                        ${pkgdir}${_install_prefix}/bin/cc.exe
+  cp bin/gcc-ar.exe                                     ${pkgdir}${_install_prefix}/bin/
+  cp bin/gcc-nm.exe                                     ${pkgdir}${_install_prefix}/bin/
+  cp bin/gcc-ranlib.exe                                 ${pkgdir}${_install_prefix}/bin/
+  cp bin/gcov.exe                                       ${pkgdir}${_install_prefix}/bin/
+#  cp bin/gcov-tool.exe                                  ${pkgdir}${_install_prefix}/bin/
+  cp bin/c++.exe                                        ${pkgdir}${_install_prefix}/bin/
+  cp bin/g++.exe                                        ${pkgdir}${_install_prefix}/bin/
+  cp bin/${_target}-c++.exe                             ${pkgdir}${_install_prefix}/bin/
+  cp bin/${_target}-g++.exe                             ${pkgdir}${_install_prefix}/bin/
+  cp bin/${_target}-gcc-${pkgver%%+*}.exe               ${pkgdir}${_install_prefix}/bin/
+  cp bin/${_target}-gcc.exe                             ${pkgdir}${_install_prefix}/bin/
+  cp bin/${_target}-gcc-ar.exe                          ${pkgdir}${_install_prefix}/bin/
+  cp bin/${_target}-gcc-nm.exe                          ${pkgdir}${_install_prefix}/bin/
+  cp bin/${_target}-gcc-ranlib.exe                      ${pkgdir}${_install_prefix}/bin/
+
+  #cp bin/{libgcc*,libgomp*,libquadmath*,libssp*,libstdc*}.dll ${pkgdir}${_install_prefix}/bin/
+  mkdir -p ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/include
+  cp lib/gcc/${_target}/${pkgver%%+*}/include/*.h        ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/include/
+  cp -r lib/gcc/${_target}/${pkgver%%+*}/include/ssp     ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/include/
+  cp -r lib/gcc/${_target}/${pkgver%%+*}/include-fixed   ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp -r lib/gcc/${_target}/${pkgver%%+*}/install-tools   ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  #cp -r lib/gcc/${_target}/${pkgver%%+*}/plugin          ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/cc1.exe            ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/collect2.exe       ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/crt*.o             ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/liblto*            ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/libgcov*           ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/lto*.exe           ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/cc1plus.exe        ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+#  cp lib/gcc/${_target}/${pkgver%%+*}/g++-mapper-server.exe ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+
+#  cp lib/libatomic*                                      ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/libgcc*                                         ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/libgcc*            ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+
+#  cp lib/libgomp*                                        ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  # cp lib/libitm*                                         ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/libquadmath*                                    ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/libssp*                                         ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  # cp lib/libvtv*                                         ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/libstdc++*                                      ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/libsupc++*                                      ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+
+  #mkdir -p ${pkgdir}${_install_prefix}/lib/gcc/${_target}/lib
+  #cp ${srcdir}${_install_prefix}/lib/gcc/${_target}/lib/libgcc_s.a ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  #cp lib/gcc/${_target}/lib/libgcc_s.a                ${pkgdir}${_install_prefix}/lib/gcc/${_target}/lib/
+
+  #cp -r lib/gcc/${_target}/${pkgver%%+*}/include/c++      ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/include/
+  cp -r include/c++                                       ${pkgdir}${_install_prefix}/include/
+  #cp lib/gcc/${_target}/${pkgver%%+*}/libstdc++*         ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  #cp lib/gcc/${_target}/${pkgver%%+*}/libsupc++*         ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+
+  mkdir -p ${pkgdir}${_install_prefix}/share/{doc,info,locale,man}
+  #cp -r share/doc/gcc-${pkgver%%+*} ${pkgdir}${_install_prefix}/share/doc/
+  cp share/info/cpp.info*                                ${pkgdir}${_install_prefix}/share/info/
+  cp share/info/cppinternals.info*                       ${pkgdir}${_install_prefix}/share/info/
+  cp share/info/gcc.info*                                ${pkgdir}${_install_prefix}/share/info/
+  cp share/info/gccinstall.info*                         ${pkgdir}${_install_prefix}/share/info/
+  cp share/info/gccint.info*                             ${pkgdir}${_install_prefix}/share/info/
+  # cp share/info/libitm.info*                             ${pkgdir}${_install_prefix}/share/info/
+#  cp share/info/libgomp.info*                            ${pkgdir}${_install_prefix}/share/info/
+  cp share/info/libquadmath.info*                        ${pkgdir}${_install_prefix}/share/info/
+
+  #cp share/locale/* ${pkgdir}${_install_prefix}/share/locale/
+  mkdir -p ${pkgdir}${_install_prefix}/share/gcc-${pkgver%%+*}/python
+  cp -r share/gcc-${pkgver%%+*}/python/libstdcxx             ${pkgdir}${_install_prefix}/share/gcc-${pkgver%%+*}/python/
+  mkdir -p ${pkgdir}${_install_prefix}/share/man/man1
+  cp share/man/man1/cpp.1*                               ${pkgdir}${_install_prefix}/share/man/man1/
+  cp share/man/man1/gcc.1*                               ${pkgdir}${_install_prefix}/share/man/man1/
+  cp share/man/man1/gcov.1*                              ${pkgdir}${_install_prefix}/share/man/man1/
+  cp share/man/man7/fsf-funding.7*                       ${pkgdir}${_install_prefix}/share/man/man1/
+  cp share/man/man7/gfdl.7*                              ${pkgdir}${_install_prefix}/share/man/man1/
+  cp share/man/man7/gpl.7*                               ${pkgdir}${_install_prefix}/share/man/man1/
+  cp share/man/man1/g++.1*                               ${pkgdir}${_install_prefix}/share/man/man1/
+
+#  # install plugins for binutils
+#  mkdir -p ${pkgdir}${_install_prefix}/lib/bfd-plugins
+#  cp lib/gcc/${_target}/${pkgver%%+*}/*plugin*.dll       ${pkgdir}${_install_prefix}/lib/bfd-plugins/
+}
+
+package_gcc-libgfortran() {
+  pkgdesc="GNU Compiler Collection (libgfortran) for mingw-org"
+  depends=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-libs=${pkgver}-${pkgrel}")
+
+  mkdir -p ${pkgdir}${_install_prefix}/bin
+  cd ${srcdir}${_install_prefix}
+  cp bin/libgfortran*.dll                                ${pkgdir}${_install_prefix}/bin/
+}
+
+package_gcc-fortran() {
+  pkgdesc="GNU Compiler Collection (Fortran) for mingw-org"
+  depends=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}=${pkgver}-${pkgrel}"
+           "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-libgfortran=${pkgver}-${pkgrel}")
+
+  mkdir -p ${pkgdir}${_install_prefix}/{bin,lib,share}
+
+  cd ${srcdir}${_install_prefix}
+  cp bin/gfortran.exe ${pkgdir}${_install_prefix}/bin/
+  cp bin/${_target}-gfortran.exe ${pkgdir}${_install_prefix}/bin/
+
+  mkdir -p ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}
+  cp -r lib/gcc/${_target}/${pkgver%%+*}/finclude       ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/f951.exe          ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/libcaf_single.a   ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/libgfortran*                                   ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  mkdir -p ${pkgdir}${_install_prefix}/share/man/man1
+  cp share/man/man1/gfortran.1*                         ${pkgdir}${_install_prefix}/share/man/man1/
+  mkdir -p ${pkgdir}${_install_prefix}/share/info
+  cp share/info/gfortran.info*                          ${pkgdir}${_install_prefix}/share/info/
+}
+
+package_gcc-ada() {
+  pkgdesc="GNU Compiler Collection (Ada) for mingw-org"
+  depends=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}=${pkgver}-${pkgrel}")
+
+  mkdir -p ${pkgdir}${_install_prefix}/{bin,lib,share}
+
+  cd ${srcdir}${_install_prefix}
+  cp bin/gnat*.exe ${pkgdir}${_install_prefix}/bin/
+
+  cp bin/{libgnarl*,libgnat*}.dll                       ${pkgdir}${_install_prefix}/bin/
+
+  mkdir -p ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}
+  cp -r lib/gcc/${_target}/${pkgver%%+*}/adainclude     ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp -r lib/gcc/${_target}/${pkgver%%+*}/adalib         ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/gnat1.exe         ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+
+  mkdir -p ${pkgdir}${_install_prefix}/share/info
+  cp share/info/gnat-style.info*                        ${pkgdir}${_install_prefix}/share/info/
+  cp share/info/gnat_rm.info*                           ${pkgdir}${_install_prefix}/share/info/
+  cp share/info/gnat_ugn.info*                          ${pkgdir}${_install_prefix}/share/info/
+}
+
+package_gcc-objc() {
+  pkgdesc="GNU Compiler Collection (ObjC,Obj-C++) for mingw-org"
+  depends=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}=${pkgver}-${pkgrel}")
+
+  mkdir -p ${pkgdir}${_install_prefix}/{bin,lib}
+
+  cd ${srcdir}${_install_prefix}
+  cp bin/libobjc*.dll ${pkgdir}${_install_prefix}/bin/
+
+  mkdir -p ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/include
+  cp -r lib/gcc/${_target}/${pkgver%%+*}/include/objc    ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/include/
+  cp lib/gcc/${_target}/${pkgver%%+*}/cc1obj.exe         ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/gcc/${_target}/${pkgver%%+*}/cc1objplus.exe     ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+  cp lib/libobjc.*                                       ${pkgdir}${_install_prefix}/lib/gcc/${_target}/${pkgver%%+*}/
+}
+
+package_libgccjit() {
+  pkgdesc="GNU Compiler Collection (libgccjit) for mingw-org"
+  depends=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}=${pkgver}-${pkgrel}")
+
+  mkdir -p ${pkgdir}${_install_prefix}/{bin,lib,include}
+
+  cd ${srcdir}${_install_prefix}
+
+  cp bin/libgccjit-0.dll                                      ${pkgdir}${_install_prefix}/bin/
+  cp include/libgccjit.h                                      ${pkgdir}${_install_prefix}/include/
+  cp include/libgccjit++.h                                    ${pkgdir}${_install_prefix}/include/
+  cp lib/libgccjit.dll.a                                      ${pkgdir}${_install_prefix}/lib/
+  mkdir -p ${pkgdir}${_install_prefix}/share/info
+  cp share/info/libgccjit.info                                ${pkgdir}${_install_prefix}/share/info/
+}
+
+# template start; name=mingw-org-splitpkg-wrappers; version=1.0;
+# vim: set ft=bash :
+
+# generate wrappers
+for _name in "${pkgname[@]}"; do
+  _short="package_${_name#${PACKAGE_MINGW_ORG_PREFIX}-}"
+  _func="$(declare -f "${_short}")"
+  eval "${_func/#${_short}/package_${_name}}"
+done
+# template end;
