@@ -1,0 +1,42 @@
+From 4eeecc9182ae80412a8b0046c00a238db1674a3a Mon Sep 17 00:00:00 2001
+From: Tim Stahlhut <stahta01@gmail.com>
+Date: Thu, 20 Jan 2022 10:09:13 -0500
+Subject: libiberty: define for headers that libiberty cannot find
+
+---
+ libiberty/fibheap.c  | 3 +++
+ libiberty/mkstemps.c | 4 ++++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/libiberty/fibheap.c b/libiberty/fibheap.c
+index b8972281006..544df1bcc08 100644
+--- a/libiberty/fibheap.c
++++ b/libiberty/fibheap.c
+@@ -22,6 +22,9 @@ Boston, MA 02110-1301, USA.  */
+ #ifdef HAVE_CONFIG_H
+ #include "config.h"
+ #endif
++#ifndef HAVE_LIMITS_H
++#define HAVE_LIMITS_H
++#endif
+ #ifdef HAVE_LIMITS_H
+ #include <limits.h>
+ #endif
+diff --git a/libiberty/mkstemps.c b/libiberty/mkstemps.c
+index 18d879ac876..5d8183616f7 100644
+--- a/libiberty/mkstemps.c
++++ b/libiberty/mkstemps.c
+@@ -20,6 +20,10 @@
+ #include "config.h"
+ #endif
+ 
++#ifndef HAVE_SYS_TIME_H
++#define HAVE_SYS_TIME_H
++#endif
++
+ #include <sys/types.h>
+ #ifdef HAVE_STDLIB_H
+ #include <stdlib.h>
+-- 
+2.34.1.windows.1
+
