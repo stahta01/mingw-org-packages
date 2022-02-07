@@ -1,0 +1,131 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
+# Contributor: Ray Donnelly <mingw.android@gmail.com>
+# Contributor: Mateusz Mikula <mati865@gmail.com>
+
+# MINGW_ARCH="mingw32" makepkg-mingw -Lf
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+
+_realname=binutils
+pkgbase=mingw-org-${_realname}2.19
+pkgname=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}")
+_ver_number=2.19.1
+#_ver_suffix=
+_ver_suffix=a
+_sourcedir=${_realname}-${_ver_number}
+pkgver=${_ver_number}${_ver_suffix}
+pkgrel=1
+pkgdesc="A set of programs to assemble and manipulate binary and object files (mingw-org)"
+arch=('any')
+mingw_arch=('mingw32')
+url="https://www.gnu.org/software/binutils/"
+license=('GPL')
+groups=("${PACKAGE_MINGW_ORG_PREFIX}-toolchain")
+depends=()
+makedepends=('texinfo'
+  "${MINGW_PACKAGE_PREFIX}-autotools" 
+  "${PACKAGE_MINGW_ORG_PREFIX}-cc"
+  "${PACKAGE_MINGW_ORG_PREFIX}-libiconv"
+  "${PACKAGE_MINGW_ORG_PREFIX}-libintl"
+  "${PACKAGE_MINGW_ORG_PREFIX}-zlib"
+)
+options=('staticlibs' '!distcc' '!ccache' '!strip')
+source=("https://ftp.gnu.org/gnu/binutils/${_sourcedir}${_ver_suffix}.tar.bz2")
+sha256sums=('2dbd2c554b70d915c5b32fcfd401d03afcbf202529059c7a80af3993885ad1c2')
+validpgpkeys=('EAF1C276A747E9ED86210CBAC3126D3B4AE55E93'
+              '3A24BC1E8FB409FA9F14371813FCEF89DD9E3C4F')
+
+apply_patch_with_msg() {
+  for _patch in "$@"
+  do
+    msg2 "Applying ${_patch}"
+    patch -p1 -i "${srcdir}/${_patch}"
+  done
+}
+
+prepare() {
+  cd ${srcdir}/${_sourcedir}
+
+#  sed -i 's|#include <sys/stat.h>|//#include <sys/stat.h>|' binutils/rename.c
+}
+
+build() {
+  export LDFLAGS="-pipe"
+  if [ "${CARCH}" = "x86_64" ]; then
+    local _conf='--enable-64-bit-bfd'
+  else
+    local _conf=''
+    LDFLAGS+=" -Wl,--large-address-aware"
+  fi
+
+  if check_option "debug" "y"; then
+    CFLAGS+=" -O0"
+  fi
+
+  [[ -d ${srcdir}/build-${MINGW_CHOST} ]] && rm -rf ${srcdir}/build-${MINGW_CHOST}
+  mkdir -p build-${MINGW_CHOST} && cd build-${MINGW_CHOST}
+
+  export PATH=${_install_prefix}/bin:$PATH
+  echo "PATH := $PATH"
+
+  # Remove "-D__USE_MINGW_ANSI_STDIO=1" from CPPFLAGS
+  CPPFLAGS=${CPPFLAGS/-D__USE_MINGW_ANSI_STDIO=1}
+  echo "CPPFLAGS := $CPPFLAGS"
+
+  CC="${_target}-gcc" \
+  ../${_sourcedir}/configure \
+    --build=${_target} \
+    --prefix=${_install_prefix} \
+    --disable-werror \
+    --enable-lto \
+    --enable-gold \
+    --with-sysroot=${_install_prefix} \
+    --with-libiconv-prefix=${_install_prefix} \
+    --with-libintl-prefix=${_install_prefix} \
+    ${_conf} \
+    --enable-nls \
+    --disable-rpath \
+    --disable-multilib \
+    --enable-install-libbfd \
+    --enable-install-libiberty \
+    --enable-plugins \
+    --enable-libssp \
+    --enable-shared --enable-static \
+    --enable-deterministic-archives
+
+  make
+}
+
+#check() {
+#  cd ${srcdir}/build-${MINGW_CHOST}
+#
+#  # unset LDFLAGS as testsuite makes assumptions about which ones are active
+#  # do not abort on errors - manually check log files
+#  make LDFLAGS="" -k check || true
+#}
+
+package() {
+  cd ${srcdir}/build-${MINGW_CHOST}
+  make DESTDIR=${pkgdir} install
+
+  mkdir -p ${pkgdir}${_install_prefix}/{lib,include}/${_realname}
+  mkdir -p ${pkgdir}${_install_prefix}/${_target}/include
+  cp ${pkgdir}${_install_prefix}/include/ansidecl.h ${pkgdir}${_install_prefix}/${_target}/include/
+  mv ${pkgdir}${_install_prefix}/include/*.h ${pkgdir}${_install_prefix}/include/${_realname}
+  mv ${pkgdir}${_install_prefix}/lib/*.a ${pkgdir}${_install_prefix}/lib/${_realname}
+
+  # https://github.com/msys2/MINGW-packages/issues/7890
+#  rm "${pkgdir}${_install_prefix}/lib/bfd-plugins/libdep.a"
+
+  find ${pkgdir}${_install_prefix}/share -type f -iname "opcodes.mo" -o -iname "bfd.mo" | xargs -rtl1 rm
+
+  install -Dm644 ${srcdir}/${_sourcedir}/COPYING      ${pkgdir}${_install_prefix}/share/licenses/${_realname}/COPYING
+  install -Dm644 ${srcdir}/${_sourcedir}/COPYING.LIB  ${pkgdir}${_install_prefix}/share/licenses/${_realname}/COPYING.LIB
+  install -Dm644 ${srcdir}/${_sourcedir}/COPYING3     ${pkgdir}${_install_prefix}/share/licenses/${_realname}/COPYING3
+  install -Dm644 ${srcdir}/${_sourcedir}/COPYING3.LIB ${pkgdir}${_install_prefix}/share/licenses/${_realname}/COPYING3.LIB
+
+  rm -f "${pkgdir}${_install_prefix}/share/info/dir"
+}
