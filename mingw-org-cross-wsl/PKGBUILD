@@ -83,6 +83,7 @@ build() {
 
 package() {
   for _target in ${_targets}; do
+    mkdir -p "${pkgdir}${_install_prefix}/${_target}/bin" # Sometimes bin is created as a file
     cd "${srcdir}/build-w32api-${_target}"
     make install DESTDIR="${pkgdir}"
     cp --no-clobber "${srcdir}/features.h" "${pkgdir}${_install_prefix}/${_target}/include/"
