@@ -1,0 +1,20 @@
+# HG changeset patch
+# Parent dc42fcc211e4d54e16e31ba46955cf3db5f3f12b
+Handle __USE_MINGW_FSEEK deprecation.
+
+diff --git a/bfd/configure.host b/bfd/configure.host
+--- a/bfd/configure.host
++++ b/bfd/configure.host
+@@ -52,11 +52,11 @@ ia64-*-hpux*)		HDEFINES=-D_LARGEFILE64_S
+ 			host64=true;;
+ ia64-*-*)		host64=true;;
+ 
+ # Workaround for limitations on win9x where file contents are
+ # not zero'd out if you seek past the end and then write.
+-i[3-7]86-*-mingw32*)	HDEFINES=-D__USE_MINGW_FSEEK;;
++i[3-7]86-*-mingw32*)	HDEFINES=-D_WIN32_WINDOWS=_WIN32_WINDOWS_ME;;
+ 
+ i[3-7]86-sequent-bsd*)	HDEFINES=-Dshared=genshared ;;
+ i[3-7]86-sequent-sysv4*) ;;
+ i[3-7]86-sequent-sysv*)	HDEFINES=-Dshared=genshared ;;
+ 
