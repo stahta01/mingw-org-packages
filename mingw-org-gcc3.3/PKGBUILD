@@ -1,0 +1,147 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Alexey Pavlov <alexpux@gmail.com>
+
+# See also:
+# https://github.com/archlinux/svntogit-community/blob/packages/mingw-w64-gcc/trunk/PKGBUILD
+# https://github.com/msys2/MINGW-packages/blob/master/mingw-w64-gcc/PKGBUILD
+# https://github.com/msys2/MSYS2-packages/blob/master/gcc/PKGBUILD
+# https://github.com/msys2/MSYS2-packages/blob/master/mingw-w64-cross-gcc/PKGBUILD
+
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+
+_enable_ada=no
+_enable_fortran=no
+
+_base_pkg_name=gcc
+pkgbase=mingw-org-${_base_pkg_name}3.3
+pkgname=("${PACKAGE_MINGW_ORG_PREFIX}-${_base_pkg_name}")
+pkgver=3.3.6
+_sourcedir=${_base_pkg_name}-${pkgver}
+pkgrel=1
+pkgdesc="GNU Compiler Collection for mingw-org"
+arch=('any')
+mingw_arch=('mingw32')
+url="https://gcc.gnu.org"
+license=('GPL' 'LGPL' 'FDL' 'custom')
+groups=("${PACKAGE_MINGW_ORG_PREFIX}-toolchain")
+makedepends=("${PACKAGE_MINGW_ORG_PREFIX}-cc"
+             "${PACKAGE_MINGW_ORG_PREFIX}-binutils"
+             "${PACKAGE_MINGW_ORG_PREFIX}-wsl"
+             "${PACKAGE_MINGW_ORG_PREFIX}-windows-default-manifest"
+             "${PACKAGE_MINGW_ORG_PREFIX}-zlib"
+             "${MINGW_PACKAGE_PREFIX}-autotools")
+depends=("${PACKAGE_MINGW_ORG_PREFIX}-binutils"
+         "${PACKAGE_MINGW_ORG_PREFIX}-wsl"
+         "${PACKAGE_MINGW_ORG_PREFIX}-windows-default-manifest"
+         "${PACKAGE_MINGW_ORG_PREFIX}-zlib")
+provides=("${PACKAGE_MINGW_ORG_PREFIX}-cc")
+conflicts=("${PACKAGE_MINGW_ORG_PREFIX}-cc")
+options=('staticlibs' '!emptydirs' '!strip')
+source=("https://ftp.gnu.org/gnu/gcc/${_base_pkg_name}-${pkgver%%+*}/${_base_pkg_name}-${pkgver}.tar.bz2"
+        config.guess
+        config.sub)
+sha256sums=('1c1aa533c67e9da5e55ed4f5736258dc753466bd716bdae3fb88fb66e6ff1d7f'
+            'cf610daf8afdedbf2110abd79bdd4121d59080cab5ec46deaf67f97273bb6bda'
+            'deb02c26f43b2ea64276c9ede77ec0f53d08e6256710f3c0a12275712085c348')
+# =========================================== #
+
+prepare() {
+  # the next two lines did not fix Configuring libiberty problem
+  cp ${srcdir}/config.guess ${srcdir}/${_sourcedir}/
+  cp ${srcdir}/config.sub   ${srcdir}/${_sourcedir}/
+
+  cd ${srcdir}/${_sourcedir}
+
+  # change hardcoded /mingw prefix to the real prefix
+  local MINGW_NATIVE_PREFIX=$(cygpath -am ${_install_prefix})
+  sed -i "s#\\/mingw\\/#${MINGW_NATIVE_PREFIX//\//\\/}\\/#g" gcc/config/i386/mingw32.h
+}
+
+build() {
+  [[ -d ${srcdir}/build-${MINGW_CHOST} ]] && rm -rf ${srcdir}/build-${MINGW_CHOST}
+  mkdir -p ${srcdir}/build-${MINGW_CHOST} && cd ${srcdir}/build-${MINGW_CHOST}
+
+  export PATH=${_install_prefix}/bin:$PATH
+  echo "PATH := $PATH"
+
+  export LDFLAGS="-pipe"
+  export CFLAGS="-pipe"
+  export CXXFLAGS="-pipe"
+
+  # Remove "-D__USE_MINGW_ANSI_STDIO=1" from CPPFLAGS
+  CPPFLAGS=${CPPFLAGS/-D__USE_MINGW_ANSI_STDIO=1}
+  echo "CPPFLAGS := $CPPFLAGS"
+
+  local _languages="c"
+  if [ "$_enable_ada" == "yes" ]; then
+    _languages+=",ada"
+  fi
+  if [ "$_enable_fortran" == "yes" ]; then
+    _languages+=",fortran"
+  fi
+
+  # so libgomp DLL gets built despide static libdl
+  export lt_cv_deplibs_check_method='pass_all'
+
+  LDFLAGS+=" -Wl,--disable-dynamicbase"
+
+  CPPFLAGS+=" -DLIBGCC2_HAS_XF_MODE=0" \
+  CFLAGS+=" -I${_install_prefix}/include" \
+  CC="${_target}-gcc" \
+  ../${_sourcedir}/configure \
+    --prefix=${_install_prefix} \
+    --infodir=${_install_prefix}/share/info \
+    --mandir=${_install_prefix}/share/man \
+    --build=${_target} \
+    --host=${_target} \
+    --target=${_target} \
+    --libexecdir=${_install_prefix}/lib \
+    --disable-bootstrap \
+    --disable-checking \
+    --disable-build-format-warnings \
+    --with-arch=i686 \
+    --enable-languages=${_languages} \
+    --enable-static \
+    --disable-libatomic \
+    --disable-threads \
+    --disable-graphite \
+    --enable-fully-dynamic-string \
+    --disable-libstdcxx \
+    --disable-libstdcxx-pch \
+    --enable-sjlj-exceptions \
+    --enable-large-address-aware \
+    --disable-libgomp \
+    --disable-libvtv \
+    --disable-multilib \
+    --disable-rpath \
+    --disable-win32-registry \
+    --disable-nls \
+    --disable-werror \
+    --disable-symvers \
+    --with-system-zlib \
+    --without-libiconv \
+    --without-libintl \
+    --with-pkgversion="Rev${pkgrel}, Built by Tims mingw-org project" \
+    --with-bugurl="https://github.com/stahta01/mingw-org-packages/issues" \
+    --with-boot-ldflags="${LDFLAGS} -static-libgcc" \
+    --with-gnu-as --with-gnu-ld
+
+  make -j1 V=1 all
+}
+
+package() {
+  cd ${srcdir}/build-${MINGW_CHOST}
+
+  mkdir -p ${pkgdir}${_install_prefix}/{bin,include,lib}
+  mkdir -p ${pkgdir}${_install_prefix}/share/{info,man}
+
+  make -j1 DESTDIR=${pkgdir} install
+
+  # Install license files
+  mkdir -p                                                  "${pkgdir}${_install_prefix}/share/licenses/${_base_pkg_name}"
+  install -Dm644 "${srcdir}/${_sourcedir}/COPYING"          "${pkgdir}${_install_prefix}/share/licenses/${_base_pkg_name}/COPYING"
+  install -Dm644 "${srcdir}/${_sourcedir}/COPYING.LIB"      "${pkgdir}${_install_prefix}/share/licenses/${_base_pkg_name}/COPYING.LIB"
+}
