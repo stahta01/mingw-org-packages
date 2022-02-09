@@ -1,0 +1,189 @@
+# Maintainer:  Tim Stahlhut <stahta01@gmail.com>
+# Contributor: Alexey Pavlov
+
+PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
+_target="i686-pc-mingw32"
+_install_prefix="/mingw-org"
+
+_enable_ada=no
+_enable_fortran=no
+
+_realname=gcc
+pkgbase=mingw-org-${_realname}4.0
+pkgname=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}")
+pkgver=4.0.4
+_sourcedir=${_realname}-${pkgver}
+pkgrel=1
+pkgdesc="GNU Compiler Collection for mingw-org"
+arch=('any')
+mingw_arch=('mingw32')
+url="https://gcc.gnu.org"
+license=('GPL' 'LGPL' 'FDL' 'custom')
+groups=("${PACKAGE_MINGW_ORG_PREFIX}-toolchain")
+makedepends=("${PACKAGE_MINGW_ORG_PREFIX}-cc"
+             $([[ "$_enable_ada" == "yes" ]] && echo "${PACKAGE_MINGW_ORG_PREFIX}-${_realname}-ada")
+             "${PACKAGE_MINGW_ORG_PREFIX}-binutils"
+             "${PACKAGE_MINGW_ORG_PREFIX}-wsl"
+             "${PACKAGE_MINGW_ORG_PREFIX}-windows-default-manifest"
+             "${PACKAGE_MINGW_ORG_PREFIX}-zlib"
+             "${MINGW_PACKAGE_PREFIX}-autotools")
+depends=("${PACKAGE_MINGW_ORG_PREFIX}-binutils"
+         "${PACKAGE_MINGW_ORG_PREFIX}-wsl"
+         "${PACKAGE_MINGW_ORG_PREFIX}-windows-default-manifest"
+         "${PACKAGE_MINGW_ORG_PREFIX}-zlib")
+provides=("${PACKAGE_MINGW_ORG_PREFIX}-cc")
+conflicts=("${PACKAGE_MINGW_ORG_PREFIX}-cc")
+options=('staticlibs' '!emptydirs' '!strip')
+source=("https://ftp.gnu.org/gnu/gcc/${_realname}-${pkgver%%+*}/${_realname}-${pkgver}.tar.bz2"
+        140-gcc-4.0-fix-for-windows-not-minding-non-existent-parent-dirs.patch
+        150-gcc-4.0-windows-lrealpath-no-force-lowercase-nor-backslash.patch
+        901-gcc-4.0-cfns-fix-mismatch-in-gnu_inline-attributes.patch
+        981-allow-over-ride-hard-coded-STANDARD_INCLUDE_DIR.patch)
+sha256sums=('e866346111f4b043a784deca5afcd2fe0e9e16e97464fdff858abbfcbe28dafa'
+            '74e3a5690f33b71399731a40b1a95fa1ec7275f156a55ee14e7a1eac1711129e'
+            '44d7f21e073c292e74ee7ee9858e31e993a4816af0a2ee09e0bb2acb557d2d33'
+            'e0442e147448bd725d39bb8ce82b8e939ccc5b33b228388b43138022f1452b4c'
+            '8c360fcc713badec66faec50aa7337243222cc2a2a077df7e1e58d0a73eb81a4')
+# =========================================== #
+apply_patch_with_msg() {
+  for _patch in "$@"
+  do
+    msg2 "Applying ${_patch}"
+    patch -Nbp1 -i "${srcdir}/${_patch}"
+  done
+}
+
+_extract_to_gcc_folder() {
+    local tarfile="$1"
+    local subfolder="$(echo "$tarfile" | sed 's/-.*$//')"
+    if [ ! -d  "$_sourcedir/$subfolder" ]; then
+        echo "Extracting ${tarfile} to $_sourcedir/$subfolder"
+        mkdir -p "$_sourcedir/$subfolder"
+        tar -x --strip-components=1 -f "$tarfile" -C "$_sourcedir/$subfolder"
+    else
+        echo "Folder $_sourcedir/$subfolder already exists"
+    fi
+}
+# =========================================== #
+
+prepare() {
+  cd ${srcdir}/${_sourcedir}
+
+  # Most likely run-time patch files
+  apply_patch_with_msg \
+    140-gcc-4.0-fix-for-windows-not-minding-non-existent-parent-dirs.patch \
+    150-gcc-4.0-windows-lrealpath-no-force-lowercase-nor-backslash.patch
+
+  # Most likely build-time patch files
+  # needed if building GCC is 5.0 or newer; no idea if GCC 5.0 can build GCC 4.0.x
+  apply_patch_with_msg 901-gcc-4.0-cfns-fix-mismatch-in-gnu_inline-attributes.patch
+
+  # change hardcoded /mingw prefix to the real prefix
+  local MINGW_NATIVE_PREFIX=$(cygpath -am ${_install_prefix})
+  sed -i "s#\\/mingw\\/#${MINGW_NATIVE_PREFIX//\//\\/}\\/#g" gcc/config/i386/mingw32.h
+}
+
+build() {
+  [[ -d ${srcdir}/build-${MINGW_CHOST} ]] && rm -rf ${srcdir}/build-${MINGW_CHOST}
+  mkdir -p ${srcdir}/build-${MINGW_CHOST} && cd ${srcdir}/build-${MINGW_CHOST}
+
+  export PATH=${_install_prefix}/bin:$PATH
+  echo "PATH := $PATH"
+
+  export LDFLAGS="-pipe"
+  export CFLAGS="-pipe"
+  export CXXFLAGS="-pipe"
+
+  # Remove "-D__USE_MINGW_ANSI_STDIO=1" from CPPFLAGS
+  CPPFLAGS=${CPPFLAGS/-D__USE_MINGW_ANSI_STDIO=1}
+  echo "CPPFLAGS := $CPPFLAGS"
+
+  echo "GCC := " $(eval "${_target}-gcc --version | grep '(GCC)'")
+
+  declare -a extra_config
+
+  case "${CARCH}" in
+    i686)
+      extra_config+=("--enable-sjlj-exceptions")
+      extra_config+=("--enable-large-address-aware")
+      local _arch=i686
+    ;;
+
+    x86_64)
+      local _arch=x86-64
+    ;;
+  esac
+
+  local _languages="c"
+  if [ "$_enable_ada" == "yes" ]; then
+    _languages+=",ada"
+  fi
+  if [ "$_enable_fortran" == "yes" ]; then
+    _languages+=",fortran"
+  fi
+
+  # so libgomp DLL gets built despide static libdl
+  export lt_cv_deplibs_check_method='pass_all'
+
+  LDFLAGS+=" -Wl,--disable-dynamicbase"
+
+#  local MINGW_NATIVE_PREFIX=$(cygpath -am ${_install_prefix})
+#  CPPFLAGS+=" -DSTANDARD_INCLUDE_DIR=${_install_prefix}/include"
+#  CPPFLAGS+=" -DSTANDARD_STARTFILE_PREFIX_1=${_install_prefix}/lib"
+#  echo "CPPFLAGS := $CPPFLAGS"
+
+  CFLAGS+=" -I${_install_prefix}/include" \
+  CC="${_target}-gcc" \
+  ../${_sourcedir}/configure \
+    --prefix=${_install_prefix} \
+    --infodir=${_install_prefix}/share/info \
+    --mandir=${_install_prefix}/share/man \
+    --with-local-prefix=${_install_prefix}/local \
+    --build=${_target} \
+    --host=${_target} \
+    --libexecdir=${_install_prefix}/lib \
+    --disable-bootstrap \
+    --enable-checking=release \
+    --disable-build-format-warnings \
+    --with-arch=${_arch} \
+    --enable-languages=${_languages} \
+    --enable-shared --enable-static \
+    --disable-libatomic \
+    --disable-threads \
+    --disable-graphite \
+    --enable-fully-dynamic-string \
+    --disable-libstdcxx \
+    --disable-libstdcxx-pch \
+    ${extra_config} \
+    --disable-libgomp \
+    --disable-libvtv \
+    --disable-multilib \
+    --disable-rpath \
+    --disable-win32-registry \
+    --disable-nls \
+    --disable-werror \
+    --disable-symvers \
+    --with-system-zlib \
+    --without-libiconv \
+    --without-libintl \
+    --with-pkgversion="Rev${pkgrel}, Built by Tims mingw-org project" \
+    --with-bugurl="https://github.com/stahta01/mingw-org-packages/issues" \
+    --with-boot-ldflags="${LDFLAGS} -static-libgcc" \
+    --with-gnu-as --with-gnu-ld
+
+  make -j1 V=1 all
+}
+
+package() {
+  cd ${srcdir}/build-${MINGW_CHOST}
+
+  mkdir -p ${pkgdir}${_install_prefix}/{bin,include,lib}
+  mkdir -p ${pkgdir}${_install_prefix}/share/{info,man}
+
+  make -j1 DESTDIR=${pkgdir} install
+
+  # Install license files
+  mkdir -p                                                  "${pkgdir}${_install_prefix}/share/licenses/${_base_pkg_name}"
+  install -Dm644 "${srcdir}/${_sourcedir}/COPYING"          "${pkgdir}${_install_prefix}/share/licenses/${_base_pkg_name}/COPYING"
+  install -Dm644 "${srcdir}/${_sourcedir}/COPYING.LIB"      "${pkgdir}${_install_prefix}/share/licenses/${_base_pkg_name}/COPYING.LIB"
+}

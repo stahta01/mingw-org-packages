@@ -1,0 +1,25 @@
+From 35b49c4253e02dad7b4d26a501224a021b31b61e Mon Sep 17 00:00:00 2001
+From: Tim Stahlhut <stahta01@gmail.com>
+Date: Wed, 9 Feb 2022 17:25:39 -0500
+Subject: Allow over-ride of hard-coded STANDARD_INCLUDE_DIR
+
+---
+ gcc/config/i386/mingw32.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/gcc/config/i386/mingw32.h b/gcc/config/i386/mingw32.h
+index 2c1a69ce45b..7347673eb0d 100644
+--- a/gcc/config/i386/mingw32.h
++++ b/gcc/config/i386/mingw32.h
+@@ -37,8 +37,9 @@ Boston, MA 02111-1307, USA.  */
+ 
+ /* Override the standard choice of /usr/include as the default prefix
+    to try when searching for header files.  */
+-#undef STANDARD_INCLUDE_DIR
++#ifndef STANDARD_INCLUDE_DIR
+ #define STANDARD_INCLUDE_DIR "/mingw/include"
++#endif
+ #undef STANDARD_INCLUDE_COMPONENT
+ #define STANDARD_INCLUDE_COMPONENT "MINGW"
+ 
+-- 
