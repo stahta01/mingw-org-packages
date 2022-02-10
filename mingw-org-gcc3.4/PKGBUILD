@@ -41,13 +41,9 @@ provides=("${PACKAGE_MINGW_ORG_PREFIX}-cc")
 conflicts=("${PACKAGE_MINGW_ORG_PREFIX}-cc")
 options=('staticlibs' '!emptydirs' '!strip')
 source=("https://ftp.gnu.org/gnu/gcc/${_base_pkg_name}-${pkgver%%+*}/${_base_pkg_name}-${pkgver}.tar.bz2"
-        971-backport-SVN-121181.patch
-        972-backport-SVN-117062.patch
-        973-backport-SVN-116721.patch)
+        972-backport-SVN-117062.patch)
 sha256sums=('7791a601878b765669022b8b3409fba33cc72f9e39340fec8af6d0e6f72dec39'
-            '3f0efa4b23a5a168a8f2a743e0bad3d528b266e09bf2e0037e66b2744d5a920f'
-            '1c47a6da9592d3a6a5153ab817f37114aafee9b5c98c6dd20e7f2004c486e36c'
-            '30a8ebe3fad7c144fcb5803bf550f0fc3b80cad7ae25489ea2f6a9546c64f3bf')
+            '1c47a6da9592d3a6a5153ab817f37114aafee9b5c98c6dd20e7f2004c486e36c')
 # =========================================== #
 apply_patch_with_msg() {
   for _patch in "$@"
@@ -70,9 +66,7 @@ prepare() {
 
   # Combination of build and runtime fixes
   apply_patch_with_msg \
-    971-backport-SVN-121181.patch \
-    972-backport-SVN-117062.patch \
-    973-backport-SVN-116721.patch
+    972-backport-SVN-117062.patch
 
   # Most likely run-time patch files
 #  patch -Nbp1 -i ${srcdir}/140-fix-for-windows-not-minding-non-existent-parent-dirs.patch
