@@ -11,7 +11,7 @@ _enable_fortran=no
 _realname=gcc
 pkgbase=mingw-org-${_realname}4.0
 pkgname=("${PACKAGE_MINGW_ORG_PREFIX}-${_realname}")
-pkgver=4.0.4
+pkgver=4.0.3
 _sourcedir=${_realname}-${pkgver}
 pkgrel=1
 pkgdesc="GNU Compiler Collection for mingw-org"
@@ -38,18 +38,28 @@ source=("https://ftp.gnu.org/gnu/gcc/${_realname}-${pkgver%%+*}/${_realname}-${p
         140-gcc-4.0-fix-for-windows-not-minding-non-existent-parent-dirs.patch
         150-gcc-4.0-windows-lrealpath-no-force-lowercase-nor-backslash.patch
         901-gcc-4.0-cfns-fix-mismatch-in-gnu_inline-attributes.patch
+        971-backport-SVN-121181.patch
         981-allow-over-ride-hard-coded-STANDARD_INCLUDE_DIR.patch)
 sha256sums=('e866346111f4b043a784deca5afcd2fe0e9e16e97464fdff858abbfcbe28dafa'
             '74e3a5690f33b71399731a40b1a95fa1ec7275f156a55ee14e7a1eac1711129e'
             '44d7f21e073c292e74ee7ee9858e31e993a4816af0a2ee09e0bb2acb557d2d33'
             'e0442e147448bd725d39bb8ce82b8e939ccc5b33b228388b43138022f1452b4c'
+            '3f0efa4b23a5a168a8f2a743e0bad3d528b266e09bf2e0037e66b2744d5a920f'
             '8c360fcc713badec66faec50aa7337243222cc2a2a077df7e1e58d0a73eb81a4')
 # =========================================== #
 apply_patch_with_msg() {
   for _patch in "$@"
   do
-    msg2 "Applying ${_patch}"
-    patch -Nbp1 -i "${srcdir}/${_patch}"
+    if [ ! -f "${srcdir}/${_patch}" ]; then
+      msg2 "Skipping ${_patch} because it is missing"
+    elif patch --dry-run -Rbp1 -i "${srcdir}/${_patch}" > /dev/null 2>&1 ; then
+      msg2 "Skipping ${_patch} because it likely was already applied"
+    elif patch --dry-run -Nbp1 -i "${srcdir}/${_patch}" > /dev/null 2>&1 ; then
+      msg2 "Applying ${_patch}"
+      patch -Nbp1 -i "${srcdir}/${_patch}"
+    else
+      msg2 "Skipping ${_patch} because it will likely fail"
+    fi
   done
 }
 
@@ -75,6 +85,7 @@ prepare() {
     150-gcc-4.0-windows-lrealpath-no-force-lowercase-nor-backslash.patch
 
   # Most likely build-time patch files
+  apply_patch_with_msg 971-backport-SVN-121181.patch
   # needed if building GCC is 5.0 or newer; no idea if GCC 5.0 can build GCC 4.0.x
   apply_patch_with_msg 901-gcc-4.0-cfns-fix-mismatch-in-gnu_inline-attributes.patch
 
