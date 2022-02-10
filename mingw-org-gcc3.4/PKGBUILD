@@ -18,7 +18,7 @@ _enable_fortran=no
 _base_pkg_name=gcc
 pkgbase=mingw-org-${_base_pkg_name}3.4
 pkgname=("${PACKAGE_MINGW_ORG_PREFIX}-${_base_pkg_name}")
-pkgver=3.4.1
+pkgver=3.4.0
 _sourcedir=${_base_pkg_name}-${pkgver}
 pkgrel=1
 pkgdesc="GNU Compiler Collection for mingw-org"
@@ -41,7 +41,7 @@ provides=("${PACKAGE_MINGW_ORG_PREFIX}-cc")
 conflicts=("${PACKAGE_MINGW_ORG_PREFIX}-cc")
 options=('staticlibs' '!emptydirs' '!strip')
 source=("https://ftp.gnu.org/gnu/gcc/${_base_pkg_name}-${pkgver%%+*}/${_base_pkg_name}-${pkgver}.tar.bz2")
-sha256sums=('5f3685533f8dc4b42b926fe70bb371b31e1368223a0ad7398ba27ea3a20e8e7a')
+sha256sums=('c4de5d2a47244ecc2902c991777a1eeec4b2c1d464a2ebf9310626be954a9175')
 # =========================================== #
 
 prepare() {
