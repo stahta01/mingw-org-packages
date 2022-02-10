@@ -109,7 +109,7 @@ build() {
 
 #  CPPFLAGS+=" -DLIBGCC2_HAS_XF_MODE=0" \
 
-  CFLAGS+=" -I${_install_prefix}/include" \
+  CFLAGS+=" -O0 -I${_install_prefix}/include" \
   CC="${_target}-gcc" \
   ../${_sourcedir}/configure \
     --prefix=${_install_prefix} \
