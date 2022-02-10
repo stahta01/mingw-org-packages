@@ -123,7 +123,7 @@ build() {
     --enable-languages=${_languages} \
     --enable-shared --enable-static \
     --disable-libatomic \
-    --disable-threads \
+    --enable-threads=gnat \
     --disable-graphite \
     --enable-fully-dynamic-string \
     --disable-libstdcxx \
