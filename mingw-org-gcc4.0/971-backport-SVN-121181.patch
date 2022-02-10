@@ -1,0 +1,50 @@
+From 04d72a0c652a33ee08ed4c88a28c6e4d7fd5b954 Mon Sep 17 00:00:00 2001
+From: Richard Guenther <rguenther@suse.de>
+Date: Thu, 25 Jan 2007 19:05:19 +0000
+Subject: backport SVN121181
+
+2007-01-25  Richard Guenther  <rguenther@suse.de>
+
+	PR middle-end/28651
+	* simplify-rtx.c (simplify_const_relational_operation):
+	Simplify A CMP B to A - B CMP 0 only for EQ and NE comparison
+	codes.
+
+Patch edited by Tim S.
+---
+ gcc/simplify-rtx.c                            | 17 ++++++++---------
+ create mode 100644 gcc/testsuite/gcc.c-torture/execute/pr28651.c
+
+diff --git a/gcc/simplify-rtx.c b/gcc/simplify-rtx.c
+index 175a2442038..4ba2d5a9554 100644
+--- a/gcc/simplify-rtx.c
++++ b/gcc/simplify-rtx.c
+@@ -3017,19 +3017,18 @@ simplify_const_relational_operation (enum rtx_code code,
+      a register or a CONST_INT, this can't help; testing for these cases will
+      prevent infinite recursion here and speed things up.
+ 
+-     If CODE is an unsigned comparison, then we can never do this optimization,
+-     because it gives an incorrect result if the subtraction wraps around zero.
+-     ANSI C defines unsigned operations such that they never overflow, and
+-     thus such cases can not be ignored; but we cannot do it even for
+-     signed comparisons for languages such as Java, so test flag_wrapv.  */
++     We can only do this for EQ and NE comparisons as otherwise we may
++     lose or introduce overflow which we cannot disregard as undefined as
++     we do not know the signedness of the operation on either the left or
++     the right hand side of the comparison.  */
+ 
+-  if (!flag_wrapv && INTEGRAL_MODE_P (mode) && trueop1 != const0_rtx
++  if (INTEGRAL_MODE_P (mode) && trueop1 != const0_rtx
++      && (code == EQ || code == NE)
+       && ! ((REG_P (op0) || GET_CODE (trueop0) == CONST_INT)
+ 	    && (REG_P (op1) || GET_CODE (trueop1) == CONST_INT))
+       && 0 != (tem = simplify_binary_operation (MINUS, mode, op0, op1))
+-      /* We cannot do this for == or != if tem is a nonzero address.  */
+-      && ((code != EQ && code != NE) || ! nonzero_address_p (tem))
+-      && code != GTU && code != GEU && code != LTU && code != LEU)
++      /* We cannot do this if tem is a nonzero address.  */
++      && ! nonzero_address_p (tem))
+     return simplify_const_relational_operation (signed_condition (code),
+ 						mode, tem, const0_rtx);
+ 
+-- 

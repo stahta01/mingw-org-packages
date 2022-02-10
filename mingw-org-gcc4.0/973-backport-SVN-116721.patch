@@ -1,0 +1,29 @@
+From 722bfa9ae35d418707b5f55d533e7f866273253f Mon Sep 17 00:00:00 2001
+From: Matthias Klose <doko@debian.org>
+Date: Wed, 6 Sep 2006 10:30:49 +0000
+Subject: backport SVN116721
+
+2006-09-06  Matthias Klose  <doko@debian.org>
+
+  * Makefile.in (s-macro_list): Conform to POSIX rules in single quoted
+  strings.
+
+Patch edited by Tim S.
+---
+ gcc/Makefile.in | 4 ++--
+diff --git a/gcc/Makefile.in b/gcc/Makefile.in
+index 40e3341eb4d..20f9c8a81d5 100644
+--- a/gcc/Makefile.in
++++ b/gcc/Makefile.in
+@@ -2819,8 +2819,8 @@ install-gcc-tooldir:
+ macro_list: s-macro_list; @true
+ s-macro_list : $(GCC_PASSES) 
+ 	echo | $(GCC_FOR_TARGET) -E -dM - | \
+-	  sed -n 's/^#define \([^_][a-zA-Z0-9_]*\).*/\1/p ; \
+-		s/^#define \(_[^_A-Z][a-zA-Z0-9_]*\).*/\1/p' | \
++	  sed -n -e 's/^#define \([^_][a-zA-Z0-9_]*\).*/\1/p' \
++		-e 's/^#define \(_[^_A-Z][a-zA-Z0-9_]*\).*/\1/p' | \
+ 	  sort -u > tmp-macro_list
+ 	$(SHELL) $(srcdir)/../move-if-change tmp-macro_list macro_list
+ 	$(STAMP) s-macro_list
+-- 

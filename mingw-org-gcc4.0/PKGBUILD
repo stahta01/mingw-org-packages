@@ -39,12 +39,16 @@ source=("https://ftp.gnu.org/gnu/gcc/${_realname}-${pkgver%%+*}/${_realname}-${p
         150-gcc-4.0-windows-lrealpath-no-force-lowercase-nor-backslash.patch
         901-gcc-4.0-cfns-fix-mismatch-in-gnu_inline-attributes.patch
         971-backport-SVN-121181.patch
+        972-backport-SVN-117062.patch
+        973-backport-SVN-116721.patch
         981-allow-over-ride-hard-coded-STANDARD_INCLUDE_DIR.patch)
 sha256sums=('e866346111f4b043a784deca5afcd2fe0e9e16e97464fdff858abbfcbe28dafa'
             '74e3a5690f33b71399731a40b1a95fa1ec7275f156a55ee14e7a1eac1711129e'
             '44d7f21e073c292e74ee7ee9858e31e993a4816af0a2ee09e0bb2acb557d2d33'
             'e0442e147448bd725d39bb8ce82b8e939ccc5b33b228388b43138022f1452b4c'
             '3f0efa4b23a5a168a8f2a743e0bad3d528b266e09bf2e0037e66b2744d5a920f'
+            '1c47a6da9592d3a6a5153ab817f37114aafee9b5c98c6dd20e7f2004c486e36c'
+            '30a8ebe3fad7c144fcb5803bf550f0fc3b80cad7ae25489ea2f6a9546c64f3bf'
             '8c360fcc713badec66faec50aa7337243222cc2a2a077df7e1e58d0a73eb81a4')
 # =========================================== #
 apply_patch_with_msg() {
@@ -84,8 +88,13 @@ prepare() {
     140-gcc-4.0-fix-for-windows-not-minding-non-existent-parent-dirs.patch \
     150-gcc-4.0-windows-lrealpath-no-force-lowercase-nor-backslash.patch
 
+  # Combination of build and runtime fixes
+  apply_patch_with_msg \
+    971-backport-SVN-121181.patch \
+    972-backport-SVN-117062.patch \
+    973-backport-SVN-116721.patch
+
   # Most likely build-time patch files
-  apply_patch_with_msg 971-backport-SVN-121181.patch
   # needed if building GCC is 5.0 or newer; no idea if GCC 5.0 can build GCC 4.0.x
   apply_patch_with_msg 901-gcc-4.0-cfns-fix-mismatch-in-gnu_inline-attributes.patch
 
