@@ -63,7 +63,7 @@ build() {
   export PATH=${_install_prefix}/bin:$PATH
   echo "PATH := $PATH"
 
-  echo "GCC := " $(eval "${_target}-gcc --version | grep '(GCC)'")
+  echo "GCC := " $(eval "${_target}-gcc --version | head -n 1 -")
 
   export LDFLAGS="-pipe"
   export CFLAGS="-pipe"
