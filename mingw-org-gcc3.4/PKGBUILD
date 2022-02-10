@@ -109,6 +109,7 @@ build() {
 
 #  CPPFLAGS+=" -DLIBGCC2_HAS_XF_MODE=0" \
 
+  # GCC 3.4.x has an optimization triggered build bug.
   CFLAGS+=" -O0 -I${_install_prefix}/include" \
   CC="${_target}-gcc" \
   ../${_sourcedir}/configure \
