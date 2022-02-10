@@ -12,7 +12,7 @@ PACKAGE_MINGW_ORG_PREFIX="mingw-org-$MSYSTEM_CARCH"
 _target="i686-pc-mingw32"
 _install_prefix="/mingw-org"
 
-_enable_ada=no
+_enable_ada=yes
 _enable_fortran=no
 
 _base_pkg_name=gcc
@@ -69,8 +69,6 @@ prepare() {
     972-backport-SVN-117062.patch
 
   # Most likely run-time patch files
-#  patch -Nbp1 -i ${srcdir}/140-fix-for-windows-not-minding-non-existent-parent-dirs.patch
-#  patch -Nbp1 -i ${srcdir}/150-gcc-4.0-windows-lrealpath-no-force-lowercase-nor-backslash.patch
 
   # change hardcoded /mingw prefix to the real prefix
   local MINGW_NATIVE_PREFIX=$(cygpath -am ${_install_prefix})
@@ -106,8 +104,6 @@ build() {
   export lt_cv_deplibs_check_method='pass_all'
 
   LDFLAGS+=" -Wl,--disable-dynamicbase"
-
-#  CPPFLAGS+=" -DLIBGCC2_HAS_XF_MODE=0" \
 
   # GCC 3.4.x has an optimization triggered build bug.
   CFLAGS+=" -O0 -I${_install_prefix}/include" \
